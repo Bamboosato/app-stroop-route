@@ -18,6 +18,7 @@ interface GameActions {
   prevStage: () => void;
   tickTimer: () => void;
   setCamPos: (r: number, c: number) => void;
+  shiftCamera: (dr: number, dc: number) => void;
   updateSettings: (partial: Partial<GameSettings>) => void;
 }
 
@@ -50,10 +51,18 @@ function saveSettingsToStorage(settings: GameSettings) {
   }
 }
 
+function getMaxCamOffset(size: number): number {
+  if (size === 7) return 3;
+  if (size === 10) return 6;
+  return 0;
+}
+
 export const useGameStore = create<GameState & GameActions>((set, get) => {
   const initialSettings = loadSettingsFromStorage();
   const initialStage = PRESET_STAGES[0];
-  const startCell = getCellAt(initialStage.cells, initialStage.start.r, initialStage.start.c) || initialStage.cells[0];
+  const startCell =
+    getCellAt(initialStage.cells, initialStage.start.r, initialStage.start.c) ||
+    initialStage.cells[0];
 
   return {
     currentStageIndex: 0,
@@ -70,7 +79,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
     initStage: (stageIndex: number) => {
       const stage = PRESET_STAGES[stageIndex] || PRESET_STAGES[0];
-      const start = getCellAt(stage.cells, stage.start.r, stage.start.c) || stage.cells[0];
+      const start =
+        getCellAt(stage.cells, stage.start.r, stage.start.c) || stage.cells[0];
       const state = get();
 
       // Stage 1〜2はデフォルトでアシストON、Stage 3以降は自力モード（OFF）
@@ -138,9 +148,37 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       if (isGoal) {
         soundService.playClear();
       } else {
-        isDead = checkDeadEnd(targetCell, newReversed, newPath, state.currentStage.cells);
+        isDead = checkDeadEnd(
+          targetCell,
+          newReversed,
+          newPath,
+          state.currentStage.cells
+        );
         if (isDead) {
           soundService.playDeadEnd();
+        }
+      }
+
+      // 自動カメラ追従 (広大迷宮時)
+      let nextCamR = state.camR;
+      let nextCamC = state.camC;
+
+      if (state.currentStage.isScrollable) {
+        const maxOffset = getMaxCamOffset(state.currentStage.size);
+        if (targetCell.r < state.camR) {
+          nextCamR = Math.max(0, state.camR - 3);
+        } else if (targetCell.r >= state.camR + 4) {
+          nextCamR = Math.min(maxOffset, state.camR + 3);
+        }
+
+        if (targetCell.c < state.camC) {
+          nextCamC = Math.max(0, state.camC - 3);
+        } else if (targetCell.c >= state.camC + 4) {
+          nextCamC = Math.min(maxOffset, state.camC + 3);
+        }
+
+        if (nextCamR !== state.camR || nextCamC !== state.camC) {
+          soundService.playSlide();
         }
       }
 
@@ -150,6 +188,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isCleared: isGoal,
         isDeadEnd: isDead,
         moveCount: state.moveCount + 1,
+        camR: nextCamR,
+        camC: nextCamC,
       });
     },
 
@@ -160,20 +200,49 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       const newPath = state.path.slice(0, -1);
       const newReversed = evaluateCurrentMode(newPath);
       const tipCell = newPath[newPath.length - 1];
-      const isDead = checkDeadEnd(tipCell, newReversed, newPath, state.currentStage.cells);
+      const isDead = checkDeadEnd(
+        tipCell,
+        newReversed,
+        newPath,
+        state.currentStage.cells
+      );
 
       soundService.playUndo();
+
+      // Undo時も必要に応じてカメラ追従
+      let nextCamR = state.camR;
+      let nextCamC = state.camC;
+      if (state.currentStage.isScrollable && tipCell) {
+        const maxOffset = getMaxCamOffset(state.currentStage.size);
+        if (tipCell.r < state.camR) {
+          nextCamR = Math.max(0, state.camR - 3);
+        } else if (tipCell.r >= state.camR + 4) {
+          nextCamR = Math.min(maxOffset, state.camR + 3);
+        }
+        if (tipCell.c < state.camC) {
+          nextCamC = Math.max(0, state.camC - 3);
+        } else if (tipCell.c >= state.camC + 4) {
+          nextCamC = Math.min(maxOffset, state.camC + 3);
+        }
+      }
 
       set({
         path: newPath,
         isReversedMode: newReversed,
         isDeadEnd: isDead,
+        camR: nextCamR,
+        camC: nextCamC,
       });
     },
 
     reset: () => {
       const state = get();
-      const start = getCellAt(state.currentStage.cells, state.currentStage.start.r, state.currentStage.start.c) || state.currentStage.cells[0];
+      const start =
+        getCellAt(
+          state.currentStage.cells,
+          state.currentStage.start.r,
+          state.currentStage.start.c
+        ) || state.currentStage.cells[0];
       soundService.playUndo();
 
       set({
@@ -182,6 +251,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isCleared: false,
         isDeadEnd: false,
         moveCount: 0,
+        camR: 0,
+        camC: 0,
       });
     },
 
@@ -207,7 +278,25 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
     },
 
     setCamPos: (r: number, c: number) => {
-      set({ camR: r, camC: c });
+      const state = get();
+      const maxOffset = getMaxCamOffset(state.currentStage.size);
+      const targetR = Math.max(0, Math.min(maxOffset, r));
+      const targetC = Math.max(0, Math.min(maxOffset, c));
+      set({ camR: targetR, camC: targetC });
+    },
+
+    shiftCamera: (dr: number, dc: number) => {
+      const state = get();
+      if (!state.currentStage.isScrollable) return;
+
+      const maxOffset = getMaxCamOffset(state.currentStage.size);
+      const nextR = Math.max(0, Math.min(maxOffset, state.camR + dr * 3));
+      const nextC = Math.max(0, Math.min(maxOffset, state.camC + dc * 3));
+
+      if (nextR !== state.camR || nextC !== state.camC) {
+        soundService.playSlide();
+        set({ camR: nextR, camC: nextC });
+      }
     },
 
     updateSettings: (partial: Partial<GameSettings>) => {

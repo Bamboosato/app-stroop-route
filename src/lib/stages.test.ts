@@ -4,8 +4,8 @@ import { checkValidMove, evaluateCurrentMode, getCellAt } from '@/lib/gameLogic'
 import { Cell } from '@/types/game';
 
 describe('Preset Stages validation', () => {
-  it('should have 3 preset stages', () => {
-    expect(PRESET_STAGES.length).toBe(3);
+  it('should have 5 preset stages', () => {
+    expect(PRESET_STAGES.length).toBe(5);
   });
 
   it('Stage 1 should have a valid solvable path to goal', () => {
@@ -27,7 +27,7 @@ describe('Preset Stages validation', () => {
         const prev = path[path.length - 1];
         const isReversed = evaluateCurrentMode(path);
         const result = checkValidMove(prev, cell!, isReversed, path);
-        expect(result.isValid, `Step ${i} from (${prev.r},${prev.c}) to (${cell?.r},${cell?.c}) failed: ${result.reason}`).toBe(true);
+        expect(result.isValid, `Step ${i} to (${cell?.r},${cell?.c}) failed: ${result.reason}`).toBe(true);
         path.push(cell!);
       }
     }
@@ -64,7 +64,6 @@ describe('Preset Stages validation', () => {
 
     const gateIndex = path.findIndex((c) => c.type === 'GATE');
     expect(gateIndex).toBeGreaterThan(0);
-    // After entering GATE, path contains 1 GATE, so reversed mode is true
     expect(evaluateCurrentMode(path.slice(0, gateIndex + 1))).toBe(true);
 
     const lastCell = path[path.length - 1];
@@ -99,5 +98,21 @@ describe('Preset Stages validation', () => {
     expect(lastCell.type).toBe('GOAL');
     expect(lastCell.r).toBe(4);
     expect(lastCell.c).toBe(4);
+  });
+
+  it('Stage 4 should be 7x7 scrollable with 49 cells and 1 GATE', () => {
+    const stage = PRESET_STAGES[3];
+    expect(stage.size).toBe(7);
+    expect(stage.isScrollable).toBe(true);
+    expect(stage.cells.length).toBe(49);
+    expect(stage.cells.filter((c) => c.type === 'GATE').length).toBe(1);
+  });
+
+  it('Stage 5 should be 10x10 scrollable with 100 cells and 2 GATEs', () => {
+    const stage = PRESET_STAGES[4];
+    expect(stage.size).toBe(10);
+    expect(stage.isScrollable).toBe(true);
+    expect(stage.cells.length).toBe(100);
+    expect(stage.cells.filter((c) => c.type === 'GATE').length).toBe(2);
   });
 });
