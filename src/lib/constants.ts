@@ -1,4 +1,4 @@
-import { ColorDef, ColorId } from '@/types/game';
+import { ColorDef, ColorId, NotationType } from '@/types/game';
 
 export const COLOR_DEFS: Record<ColorId, ColorDef> = {
   RED: {
@@ -61,3 +61,20 @@ export const DIRECTIONS = [
   { r: 0, c: -1 }, // 左
   { r: 0, c: 1 },  // 右
 ] as const;
+
+export function getWordDisplay(
+  wordId: ColorId,
+  notation?: NotationType
+): string {
+  const def = COLOR_DEFS[wordId];
+  if (!def) return '';
+  switch (notation) {
+    case 'katakana':
+      return def.kata;
+    case 'kanji':
+      return def.kanji;
+    case 'hiragana':
+    default:
+      return def.kana;
+  }
+}
