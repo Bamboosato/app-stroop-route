@@ -1,0 +1,16 @@
+{
+  "name": "Stroop Route - 意色交差パズル",
+  "short_name": "StroopRoute",
+  "description": "ストループ効果をゲームメカニクスに昇華させた新感覚の脳トレ一筆書きパズルゲーム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

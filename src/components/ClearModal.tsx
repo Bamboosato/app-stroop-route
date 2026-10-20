@@ -22,7 +22,6 @@ export const ClearModal: React.FC = () => {
 
   useEffect(() => {
     if (isCleared) {
-      // 紙吹雪を打ち上げる
       confetti({
         particleCount: 80,
         spread: 70,
@@ -40,11 +39,11 @@ export const ClearModal: React.FC = () => {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const hasNext = currentStageIndex < PRESET_STAGES.length - 1;
+  const hasNext =
+    currentStageIndex >= 0 && currentStageIndex < PRESET_STAGES.length - 1;
 
   // Wordle風絵文字共有テキスト生成
   const handleShare = () => {
-    // パス中のGATEの有無などから絵文字を生成
     const pathEmojis = path
       .map((c) => {
         if (c.type === 'START') return '🟢';
@@ -54,7 +53,14 @@ export const ClearModal: React.FC = () => {
       })
       .join('');
 
-    const text = `Stroop Route 【${currentStage.title}】 クリア！
+    const titleText =
+      currentStage.id === 999
+        ? `Daily #${currentStage.title.replace('Daily: ', '').replace(/\//g, '')}`
+        : currentStage.id >= 1000
+        ? `Free Play (${currentStage.size}x${currentStage.size})`
+        : `【${currentStage.title}】`;
+
+    const text = `Stroop Route ${titleText} クリア！
 ⏱ Time: ${formatTime(timerSeconds)} | 🚶 Steps: ${moveCount}
 🧠 抑制制御: +35pt | 認知的柔軟性: +30pt
 ${pathEmojis}
@@ -136,7 +142,7 @@ https://github.com/Bamboosato/app-stroop-route`;
             </button>
           ) : (
             <div className="text-xs font-bold text-emerald-400 py-1">
-              🎉 プリセットステージ全制覇！
+              🎉 素晴らしい集中力です！
             </div>
           )}
 
