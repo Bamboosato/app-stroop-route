@@ -1,4 +1,5 @@
 import { Stage, Cell } from '@/types/game';
+import { generateStage } from '@/lib/generator';
 
 // ==========================================
 // Stage 1: 入門 (ひらがな) - 4x4
@@ -130,4 +131,42 @@ export const STAGE_3: Stage = {
   recommendedSteps: 12,
 };
 
-export const PRESET_STAGES: Stage[] = [STAGE_1, STAGE_2, STAGE_3];
+// ==========================================
+// Stage 4: 広大迷宮 (4区画) - 7x7 + GATE x 1
+// ==========================================
+export const STAGE_4: Stage = generateStage({
+  id: 4,
+  title: 'Stage 4: 広大迷宮 (4区画)',
+  size: 7,
+  isScrollable: true,
+  viewportSize: 4,
+  description: '4×4ファインダーで7×7の広大迷宮を探検！スワイプしてカメラをスライドさせよう。',
+  gateCount: 1,
+  targetLength: 18,
+  notationRule: 'mixed_all',
+  seed: 4210,
+});
+
+// ==========================================
+// Stage 5: 超巨大迷宮 (9区画) - 10x10 + GATE x 2
+// ==========================================
+export const STAGE_5: Stage = generateStage({
+  id: 5,
+  title: 'Stage 5: 超巨大迷宮 (9区画)',
+  size: 10,
+  isScrollable: true,
+  viewportSize: 4,
+  description: '10×10マス（9区画）の最難関巨大迷宮！2箇所の反転ゲートを制覇せよ。',
+  gateCount: 2,
+  targetLength: 26,
+  notationRule: 'mixed_all',
+  seed: 9876,
+});
+
+export const PRESET_STAGES: Stage[] = [
+  STAGE_1,
+  STAGE_2,
+  STAGE_3,
+  STAGE_4,
+  STAGE_5,
+];

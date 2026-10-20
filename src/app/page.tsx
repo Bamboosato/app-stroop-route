@@ -5,6 +5,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { Header } from '@/components/Header';
 import { ModeBanner } from '@/components/ModeBanner';
 import { GameBoard } from '@/components/GameBoard';
+import { MiniDotHud } from '@/components/MiniDotHud';
 import { DeadEndToast } from '@/components/DeadEndToast';
 import { ClearModal } from '@/components/ClearModal';
 import { SettingsModal } from '@/components/SettingsModal';
@@ -30,16 +31,17 @@ export default function Home() {
   }, [isCleared, tickTimer]);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-3 px-2 sm:px-4 max-w-lg mx-auto">
+    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-2 px-2 sm:px-4 max-w-lg mx-auto">
       {/* 上部ヘッダー（タイトル、ステージ、タイマー、操作ボタン） */}
       <div className="flex flex-col gap-1 w-full">
         <Header onOpenSettings={() => setIsSettingsOpen(true)} />
         <ModeBanner />
       </div>
 
-      {/* 中央メイン盤面 */}
-      <div className="flex-1 flex flex-col items-center justify-center my-auto w-full">
+      {/* 中央メイン盤面 ＆ HUD */}
+      <div className="flex-1 flex flex-col items-center justify-center my-auto w-full gap-1">
         <GameBoard />
+        <MiniDotHud />
       </div>
 
       {/* 下部フッター ＆ ヘルプ案内 */}
@@ -57,7 +59,7 @@ export default function Home() {
             <p className="font-bold text-cyan-300">💡 基本ルール</p>
             <p>1. <strong>通常モード</strong>: 直前のマスの<strong>「文字の意味」</strong>と同じ<strong>「インク色」</strong>の隣接マスへ進みます。</p>
             <p>2. <strong>反転ゲート（⚡）</strong>: 通過するとルールが反転！直前のマスの<strong>「インク色」</strong>と同じ<strong>「文字の意味」</strong>へ進むようになります。</p>
-            <p>3. <strong>自己交差禁止</strong>: すでに通ったマスへは戻れません（Undoで取り消すことは可能）。</p>
+            <p>3. <strong>広大迷宮 (Stage 4, 5)</strong>: 盤面をスワイプするか、下のミニドットをタップすると視界（4×4ファインダー）がスライドします。</p>
             <p className="text-[11px] text-slate-400 pt-1">
               ※ PCでは矢印キー / WASD / Z(Undo) / R(リセット) でも操作可能です。
             </p>
