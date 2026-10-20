@@ -9,11 +9,13 @@ import { MiniDotHud } from '@/components/MiniDotHud';
 import { DeadEndToast } from '@/components/DeadEndToast';
 import { ClearModal } from '@/components/ClearModal';
 import { SettingsModal } from '@/components/SettingsModal';
+import { StageSelectModal } from '@/components/StageSelectModal';
 import { useKeyboardControls } from '@/hooks/useKeyboardControls';
 import { HelpCircle } from 'lucide-react';
 
 export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isStageSelectOpen, setIsStageSelectOpen] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
 
   const { tickTimer, isCleared } = useGameStore();
@@ -34,7 +36,10 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-2 px-2 sm:px-4 max-w-lg mx-auto">
       {/* 上部ヘッダー（タイトル、ステージ、タイマー、操作ボタン） */}
       <div className="flex flex-col gap-1 w-full">
-        <Header onOpenSettings={() => setIsSettingsOpen(true)} />
+        <Header
+          onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenStageSelect={() => setIsStageSelectOpen(true)}
+        />
         <ModeBanner />
       </div>
 
@@ -59,7 +64,7 @@ export default function Home() {
             <p className="font-bold text-cyan-300">💡 基本ルール</p>
             <p>1. <strong>通常モード</strong>: 直前のマスの<strong>「文字の意味」</strong>と同じ<strong>「インク色」</strong>の隣接マスへ進みます。</p>
             <p>2. <strong>反転ゲート（⚡）</strong>: 通過するとルールが反転！直前のマスの<strong>「インク色」</strong>と同じ<strong>「文字の意味」</strong>へ進むようになります。</p>
-            <p>3. <strong>広大迷宮 (Stage 4, 5)</strong>: 盤面をスワイプするか、下のミニドットをタップすると視界（4×4ファインダー）がスライドします。</p>
+            <p>3. <strong>広大迷宮 (Stage 4, 5, Daily)</strong>: 盤面をスワイプするか、下のミニドットをタップすると視界（4×4ファインダー）がスライドします。</p>
             <p className="text-[11px] text-slate-400 pt-1">
               ※ PCでは矢印キー / WASD / Z(Undo) / R(リセット) でも操作可能です。
             </p>
@@ -77,6 +82,10 @@ export default function Home() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      <StageSelectModal
+        isOpen={isStageSelectOpen}
+        onClose={() => setIsStageSelectOpen(false)}
       />
     </main>
   );

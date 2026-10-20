@@ -170,3 +170,48 @@ export const PRESET_STAGES: Stage[] = [
   STAGE_4,
   STAGE_5,
 ];
+
+/**
+ * デイリーチャレンジパズルを生成（日付シード）
+ */
+export function getDailyStage(date: Date = new Date()): Stage {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const dateStr = `${y}${m}${d}`;
+
+  return generateStage({
+    id: 999,
+    title: `Daily: ${y}/${m}/${d}`,
+    size: 7,
+    isScrollable: true,
+    viewportSize: 4,
+    description: `全世界共通の日替わりパズル！本日の挑戦（${y}/${m}/${d}）`,
+    gateCount: 1,
+    targetLength: 18,
+    notationRule: 'mixed_all',
+    seed: `daily_${dateStr}`,
+  });
+}
+
+/**
+ * フリープレイ用ランダムステージ生成
+ */
+export function getRandomStage(size: number = 7): Stage {
+  const seed = Math.floor(Math.random() * 1000000);
+  const gateCount = size >= 10 ? 2 : size >= 5 ? 1 : 0;
+  const targetLength = size === 4 ? 8 : size === 5 ? 12 : size === 7 ? 18 : 26;
+
+  return generateStage({
+    id: 1000 + (seed % 1000),
+    title: `ランダム迷宮 (${size}×${size})`,
+    size,
+    isScrollable: size > 5,
+    viewportSize: 4,
+    description: `シード #${seed} から自動生成された無限パズル。`,
+    gateCount,
+    targetLength,
+    notationRule: 'mixed_all',
+    seed,
+  });
+}

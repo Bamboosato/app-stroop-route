@@ -11,6 +11,7 @@ import { soundService } from '@/lib/sound';
 
 interface GameActions {
   initStage: (stageIndex: number) => void;
+  loadCustomStage: (stage: Stage) => void;
   stepTo: (cell: Cell) => void;
   undo: () => void;
   reset: () => void;
@@ -83,7 +84,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         getCellAt(stage.cells, stage.start.r, stage.start.c) || stage.cells[0];
       const state = get();
 
-      // Stage 1〜2はデフォルトでアシストON、Stage 3以降は自力モード（OFF）
       const shouldAssist = stage.id <= 2;
       const updatedSettings: GameSettings = {
         ...state.settings,
@@ -92,6 +92,32 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
       set({
         currentStageIndex: stageIndex,
+        currentStage: stage,
+        path: [start],
+        isReversedMode: false,
+        timerSeconds: 0,
+        isCleared: false,
+        isDeadEnd: false,
+        camR: 0,
+        camC: 0,
+        moveCount: 0,
+        settings: updatedSettings,
+      });
+    },
+
+    loadCustomStage: (stage: Stage) => {
+      const start =
+        getCellAt(stage.cells, stage.start.r, stage.start.c) || stage.cells[0];
+      const state = get();
+
+      const shouldAssist = stage.id <= 2;
+      const updatedSettings: GameSettings = {
+        ...state.settings,
+        isMoveAssist: shouldAssist,
+      };
+
+      set({
+        currentStageIndex: -1, // カスタム/デイリー
         currentStage: stage,
         path: [start],
         isReversedMode: false,
@@ -209,7 +235,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
       soundService.playUndo();
 
-      // Undo時も必要に応じてカメラ追従
       let nextCamR = state.camR;
       let nextCamC = state.camC;
       if (state.currentStage.isScrollable && tipCell) {
@@ -258,7 +283,10 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
     nextStage: () => {
       const state = get();
-      if (state.currentStageIndex < PRESET_STAGES.length - 1) {
+      if (
+        state.currentStageIndex >= 0 &&
+        state.currentStageIndex < PRESET_STAGES.length - 1
+      ) {
         get().initStage(state.currentStageIndex + 1);
       }
     },

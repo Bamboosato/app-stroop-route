@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PRESET_STAGES } from '@/lib/stages';
+import { PRESET_STAGES, getDailyStage, getRandomStage } from '@/lib/stages';
 import { checkValidMove, evaluateCurrentMode, getCellAt } from '@/lib/gameLogic';
 import { Cell } from '@/types/game';
 
@@ -114,5 +114,29 @@ describe('Preset Stages validation', () => {
     expect(stage.isScrollable).toBe(true);
     expect(stage.cells.length).toBe(100);
     expect(stage.cells.filter((c) => c.type === 'GATE').length).toBe(2);
+  });
+
+  describe('Daily Stage and Random Generator', () => {
+    it('getDailyStage should be deterministic for the same date', () => {
+      const fixedDate = new Date(2026, 9, 20); // 2026-10-20
+      const daily1 = getDailyStage(fixedDate);
+      const daily2 = getDailyStage(fixedDate);
+
+      expect(daily1.title).toBe('Daily: 2026/10/20');
+      expect(daily1.cells.length).toBe(49);
+      expect(daily1.cells[0].word).toBe(daily2.cells[0].word);
+      expect(daily1.cells[0].ink).toBe(daily2.cells[0].ink);
+    });
+
+    it('getRandomStage should generate valid stages with appropriate size', () => {
+      const rand4 = getRandomStage(4);
+      expect(rand4.size).toBe(4);
+      expect(rand4.cells.length).toBe(16);
+
+      const rand10 = getRandomStage(10);
+      expect(rand10.size).toBe(10);
+      expect(rand10.cells.length).toBe(100);
+      expect(rand10.isScrollable).toBe(true);
+    });
   });
 });
