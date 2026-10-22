@@ -93,51 +93,54 @@ export const GameBoard: React.FC = () => {
     }
   };
 
-  const handlePointerUp = (e: MouseEvent | TouchEvent | PointerEvent) => {
-    if (isDrawingPath) {
-      setIsDrawingPath(false);
-      touchStartRef.current = null;
-      return;
-    }
+  const handlePointerUp = useCallback(
+    (e: MouseEvent | TouchEvent | PointerEvent) => {
+      if (isDrawingPath) {
+        setIsDrawingPath(false);
+        touchStartRef.current = null;
+        return;
+      }
 
-    // スワイプ移動判定
-    if (touchStartRef.current && isScrollable) {
-      const clientX = 'clientX' in e ? e.clientX : (e as TouchEvent).changedTouches?.[0]?.clientX ?? 0;
-      const clientY = 'clientY' in e ? e.clientY : (e as TouchEvent).changedTouches?.[0]?.clientY ?? 0;
+      // スワイプ移動判定
+      if (touchStartRef.current && isScrollable) {
+        const clientX = 'clientX' in e ? e.clientX : (e as TouchEvent).changedTouches?.[0]?.clientX ?? 0;
+        const clientY = 'clientY' in e ? e.clientY : (e as TouchEvent).changedTouches?.[0]?.clientY ?? 0;
 
-      const dx = clientX - touchStartRef.current.x;
-      const dy = clientY - touchStartRef.current.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+        const dx = clientX - touchStartRef.current.x;
+        const dy = clientY - touchStartRef.current.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist >= 32) {
-        if (Math.abs(dx) > Math.abs(dy)) {
-          // 水平スワイプ: 指を左に動かしたら右の視界へ (dx < 0 -> shift +1)
-          if (dx < -32) {
-            shiftCamera(0, 1);
-          } else if (dx > 32) {
-            shiftCamera(0, -1);
-          }
-        } else {
-          // 垂直スワイプ: 指を上に動かしたら下の視界へ (dy < 0 -> shift +1)
-          if (dy < -32) {
-            shiftCamera(1, 0);
-          } else if (dy > 32) {
-            shiftCamera(-1, 0);
+        if (dist >= 32) {
+          if (Math.abs(dx) > Math.abs(dy)) {
+            // 水平スワイプ: 指を左に動かしたら右の視界へ (dx < 0 -> shift +1)
+            if (dx < -32) {
+              shiftCamera(0, 1);
+            } else if (dx > 32) {
+              shiftCamera(0, -1);
+            }
+          } else {
+            // 垂直スワイプ: 指を上に動かしたら下の視界へ (dy < 0 -> shift +1)
+            if (dy < -32) {
+              shiftCamera(1, 0);
+            } else if (dy > 32) {
+              shiftCamera(-1, 0);
+            }
           }
         }
       }
-    }
 
-    touchStartRef.current = null;
-    setIsDrawingPath(false);
-  };
+      touchStartRef.current = null;
+      setIsDrawingPath(false);
+    },
+    [isDrawingPath, isScrollable, shiftCamera]
+  );
 
   useEffect(() => {
     window.addEventListener('pointerup', handlePointerUp);
     return () => {
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [isDrawingPath, isScrollable, shiftCamera]);
+  }, [handlePointerUp]);
 
   return (
     <div className="w-full max-w-md mx-auto px-4 py-1 select-none flex flex-col items-center justify-center">
@@ -150,15 +153,15 @@ export const GameBoard: React.FC = () => {
         className={`relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-950/90 backdrop-blur-md border-[4px] border-purple-500/80 shadow-[0_0_24px_rgba(168,85,247,0.35)] transition-transform ${
           isDeadEnd ? 'animate-shake' : ''
         }`}
-        style={{
-          touchAction: 'none',
-          // 4x4 ビューポートを基準とした精密グリッド寸法
-          // 1マスのサイズ = (ビューポート全幅100% - パディング左右16px - 3つのギャップ24px) / 4
-          ['--gap' as any]: '8px',
-          ['--pad' as any]: '8px',
-          containerType: 'inline-size',
-          ['--cell-size' as any]: 'calc((100cqw - 16px - 24px) / 4)',
-        }}
+        style={
+          {
+            touchAction: 'none',
+            containerType: 'inline-size',
+            '--gap': '8px',
+            '--pad': '8px',
+            '--cell-size': 'calc((100cqw - 16px - 24px) / 4)',
+          } as React.CSSProperties
+        }
       >
         {/* スライディング迷宮フレーム (.labyrinth-frame) */}
         <div

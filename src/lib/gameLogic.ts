@@ -1,4 +1,4 @@
-import { Cell, ColorId } from '@/types/game';
+import { Cell } from '@/types/game';
 import { DIRECTIONS } from '@/lib/constants';
 
 export type InvalidMoveReason = 'NOT_ADJACENT' | 'ALREADY_VISITED' | 'STROOP_MISMATCH';
