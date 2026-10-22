@@ -74,10 +74,10 @@ export const CellItem: React.FC<CellItemProps> = ({
   // 背景ウォーターマーク（S / G 文字および ⚡ アイコン）の適度なサイズ設定
   const watermarkLetterClass =
     gridSize >= 7
-      ? 'text-3xl md:text-4xl'
+      ? 'text-xl md:text-2xl'
       : gridSize === 5
-      ? 'text-4xl md:text-5xl'
-      : 'text-6xl sm:text-7xl md:text-8xl';
+      ? 'text-2xl sm:text-3xl md:text-3xl'
+      : 'text-4xl sm:text-5xl';
 
   const watermarkIconClass =
     gridSize >= 7
@@ -129,7 +129,7 @@ export const CellItem: React.FC<CellItemProps> = ({
 
       {/* 背景ウォーターマーク: STARTは「S」、GOALは「G」、GATEは「⚡」 */}
       {cell.type === 'START' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
           <span
             className={`${watermarkLetterClass} font-light font-sans text-emerald-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]`}
           >
@@ -138,7 +138,7 @@ export const CellItem: React.FC<CellItemProps> = ({
         </div>
       )}
       {cell.type === 'GOAL' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
           <span
             className={`${watermarkLetterClass} font-light font-sans text-amber-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]`}
           >
@@ -147,7 +147,7 @@ export const CellItem: React.FC<CellItemProps> = ({
         </div>
       )}
       {cell.type === 'GATE' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
           <Zap
             className={`${watermarkIconClass} text-purple-400/20 fill-current drop-shadow-[0_0_10px_rgba(192,132,252,0.35)]`}
           />
