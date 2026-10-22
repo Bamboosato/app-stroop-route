@@ -139,17 +139,9 @@ export const GameBoard: React.FC = () => {
     };
   }, [isDrawingPath, isScrollable, shiftCamera]);
 
-  // グリッドとファインダーのサイズ計算
-  const isFixedGrid = !isScrollable;
-  const labyrinthPercentSize = isFixedGrid ? 100 : (currentStage.size / 4) * 100;
-
-  // カメラTransform計算
-  const translateX = isScrollable ? -(camC * 25) : 0;
-  const translateY = isScrollable ? -(camR * 25) : 0;
-
   return (
     <div className="w-full max-w-md mx-auto px-4 py-1 select-none flex flex-col items-center justify-center">
-      {/* 4x4 ファインダービューポート (外枠) */}
+      {/* 4x4 ファインダービューポート (外枠: どのステージでも縦横4マスが完全にピッタリ収まる基準窓) */}
       <div
         id="gridWrapper"
         ref={boardWrapperRef}
@@ -158,15 +150,30 @@ export const GameBoard: React.FC = () => {
         className={`relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-950/90 backdrop-blur-md border-[4px] border-purple-500/80 shadow-[0_0_24px_rgba(168,85,247,0.35)] transition-transform ${
           isDeadEnd ? 'animate-shake' : ''
         }`}
-        style={{ touchAction: 'none' }}
+        style={{
+          touchAction: 'none',
+          // 4x4 ビューポートを基準とした精密グリッド寸法
+          // 1マスのサイズ = (ビューポート全幅100% - パディング左右16px - 3つのギャップ24px) / 4
+          ['--gap' as any]: '8px',
+          ['--pad' as any]: '8px',
+          containerType: 'inline-size',
+          ['--cell-size' as any]: 'calc((100cqw - 16px - 24px) / 4)',
+        }}
       >
         {/* スライディング迷宮フレーム (.labyrinth-frame) */}
         <div
           className="relative transition-transform duration-300 ease-out"
           style={{
-            width: `${labyrinthPercentSize}%`,
-            height: `${labyrinthPercentSize}%`,
-            transform: `translate3d(${translateX}%, ${translateY}%, 0)`,
+            // 迷宮全体の幅 = size個のセル + (size - 1)個のギャップ + パディング左右16px
+            width: isScrollable
+              ? `calc(var(--cell-size) * ${currentStage.size} + var(--gap) * ${currentStage.size - 1} + var(--pad) * 2)`
+              : '100%',
+            height: isScrollable
+              ? `calc(var(--cell-size) * ${currentStage.size} + var(--gap) * ${currentStage.size - 1} + var(--pad) * 2)`
+              : '100%',
+            transform: isScrollable
+              ? `translate3d(calc(-1 * ${camC} * (var(--cell-size) + var(--gap))), calc(-1 * ${camR} * (var(--cell-size) + var(--gap))), 0)`
+              : 'none',
           }}
         >
           {/* 動的SVGコネクションライン */}
@@ -176,12 +183,13 @@ export const GameBoard: React.FC = () => {
             isReversedMode={isReversedMode}
           />
 
-          {/* 全マスグリッド */}
+          {/* 全マスグリッド (4x4セルサイズで完全均一配置) */}
           <div
-            className="grid w-full h-full p-2.5"
+            className="grid w-full h-full p-2"
             style={{
-              gridTemplateColumns: `repeat(${currentStage.size}, minmax(0, 1fr))`,
-              gap: '0.5rem',
+              gridTemplateColumns: `repeat(${currentStage.size}, var(--cell-size))`,
+              gridTemplateRows: `repeat(${currentStage.size}, var(--cell-size))`,
+              gap: 'var(--gap)',
             }}
           >
             {currentStage.cells.map((cell) => {
