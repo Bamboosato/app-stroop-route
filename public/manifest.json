@@ -3,13 +3,32 @@
   "short_name": "StroopRoute",
   "description": "ストループ効果をゲームメカニクスに昇華させた新感覚の脳トレ一筆書きパズルゲーム",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#030712",
-  "theme_color": "#a855f7",
+  "theme_color": "#030712",
+  "categories": ["games", "puzzle"],
   "icons": [
     {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "48x48 32x32 16x16",
       "type": "image/x-icon"
     }
   ]
