@@ -74,10 +74,10 @@ export const CellItem: React.FC<CellItemProps> = ({
   // 背景ウォーターマーク（S / G 文字および ⚡ アイコン）の適度なサイズ設定
   const watermarkLetterClass =
     gridSize >= 7
-      ? 'text-2xl md:text-3xl'
-      : gridSize === 5
       ? 'text-3xl md:text-4xl'
-      : 'text-5xl sm:text-6xl md:text-7xl';
+      : gridSize === 5
+      ? 'text-4xl md:text-5xl'
+      : 'text-6xl sm:text-7xl md:text-8xl';
 
   const watermarkIconClass =
     gridSize >= 7
@@ -131,7 +131,7 @@ export const CellItem: React.FC<CellItemProps> = ({
       {cell.type === 'START' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
           <span
-            className={`${watermarkLetterClass} font-black font-sans text-emerald-400/18 select-none leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(16,185,129,0.35)]`}
+            className={`${watermarkLetterClass} font-light font-sans text-emerald-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]`}
           >
             S
           </span>
@@ -140,7 +140,7 @@ export const CellItem: React.FC<CellItemProps> = ({
       {cell.type === 'GOAL' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
           <span
-            className={`${watermarkLetterClass} font-black font-sans text-amber-400/18 select-none leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(251,191,36,0.35)]`}
+            className={`${watermarkLetterClass} font-light font-sans text-amber-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]`}
           >
             G
           </span>
