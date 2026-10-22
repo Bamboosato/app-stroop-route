@@ -12,7 +12,7 @@ interface CellItemProps {
   isNextCandidate: boolean;
   isCudMode: boolean;
   onSelect: (cell: Cell) => void;
-  gridSize: number;
+  gridSize?: number;
 }
 
 export const CellItem: React.FC<CellItemProps> = ({
@@ -22,28 +22,14 @@ export const CellItem: React.FC<CellItemProps> = ({
   isNextCandidate,
   isCudMode,
   onSelect,
-  gridSize,
 }) => {
   const inkDef = COLOR_DEFS[cell.ink];
   const wordDisplay = getWordDisplay(cell.word, cell.notation);
 
-  // パネル内の文字サイズは文字数にかかわらず「4文字のときのサイズ」にすべて統一
-  let dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
-  let trackingClass = 'tracking-tighter';
-
-  if (gridSize >= 7) {
-    dynamicFontSize = 'text-[9px] md:text-[10px] leading-tight';
-    trackingClass = 'tracking-tighter';
-  } else if (gridSize === 5) {
-    dynamicFontSize = 'text-xs md:text-sm leading-tight';
-    trackingClass = 'tracking-tighter';
-  } else {
-    // 4x4
-    dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
-    trackingClass = 'tracking-tighter';
-  }
-
-  const labelSizeClass = gridSize >= 7 ? 'text-[8px]' : gridSize === 5 ? 'text-[9px]' : 'text-[10px]';
+  // パネル内の文字サイズおよびバッジサイズはステージ・文字数にかかわらず完全に統一
+  const dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
+  const trackingClass = 'tracking-tighter';
+  const labelSizeClass = 'text-[10px]';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -106,7 +92,7 @@ export const CellItem: React.FC<CellItemProps> = ({
         </span>
       )}
 
-      {/* 単語文字（インク色で描画） - 4文字サイズに統一され、上部バッジとも干渉せず中央配置 */}
+      {/* 単語文字（インク色で描画） - 全ステージで一律に4文字サイズで統一 */}
       <span
         className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
         style={{ color: inkDef.hex }}
