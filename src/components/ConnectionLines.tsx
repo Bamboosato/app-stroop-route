@@ -27,17 +27,17 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
     .join(' ');
 
   const strokeColor = isReversedMode ? '#e879f9' : '#22d3ee';
-  const glowColor = isReversedMode ? 'rgba(217, 70, 239, 0.45)' : 'rgba(34, 211, 238, 0.45)';
+  const glowColor = isReversedMode ? 'rgba(217, 70, 239, 0.35)' : 'rgba(34, 211, 238, 0.35)';
 
   return (
     <svg
-      className="absolute inset-0 w-full h-full pointer-events-none z-10"
+      className="absolute inset-0 w-full h-full pointer-events-none z-0"
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
     >
       <defs>
         <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feGaussianBlur stdDeviation="1.2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -45,12 +45,12 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
         </filter>
       </defs>
 
-      {/* 外側グローライン */}
+      {/* 外側グローライン（半透明で背後から光る） */}
       <polyline
         points={points}
         fill="none"
         stroke={glowColor}
-        strokeWidth={stepSize * 0.22}
+        strokeWidth={stepSize * 0.16}
         strokeLinecap="round"
         strokeLinejoin="round"
         filter="url(#neon-glow)"
@@ -61,27 +61,11 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
         points={points}
         fill="none"
         stroke={strokeColor}
-        strokeWidth={stepSize * 0.08}
+        strokeWidth={stepSize * 0.05}
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeOpacity="0.85"
       />
-
-      {/* パス先端のパルスドット */}
-      {path.length > 0 && (() => {
-        const tip = path[path.length - 1];
-        const cx = (tip.c + 0.5) * stepSize;
-        const cy = (tip.r + 0.5) * stepSize;
-        return (
-          <circle
-            cx={cx}
-            cy={cy}
-            r={stepSize * 0.12}
-            fill="#ffffff"
-            stroke={strokeColor}
-            strokeWidth={stepSize * 0.04}
-          />
-        );
-      })()}
     </svg>
   );
 };

@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { PRESET_STAGES } from '@/lib/stages';
 import confetti from 'canvas-confetti';
-import { Trophy, Share2, ArrowRight, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { Trophy, Share2, ArrowRight, RotateCcw, Check, Sparkles, X, Eye } from 'lucide-react';
 
 export const ClearModal: React.FC = () => {
   const {
     isCleared,
+    isClearModalOpen,
+    closeClearModal,
     currentStageIndex,
     currentStage,
     timerSeconds,
@@ -21,7 +23,7 @@ export const ClearModal: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (isCleared) {
+    if (isCleared && isClearModalOpen) {
       confetti({
         particleCount: 80,
         spread: 70,
@@ -29,9 +31,10 @@ export const ClearModal: React.FC = () => {
         colors: ['#22d3ee', '#c084fc', '#f43f5e', '#34d399', '#fbbf24'],
       });
     }
-  }, [isCleared]);
+  }, [isCleared, isClearModalOpen]);
 
-  if (!isCleared) return null;
+  // isCleared かつ isClearModalOpen の時のみ表示
+  if (!isCleared || !isClearModalOpen) return null;
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -77,7 +80,17 @@ https://github.com/Bamboosato/app-stroop-route`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-sm rounded-3xl bg-slate-900 border-2 border-purple-500/80 p-6 shadow-[0_0_30px_rgba(168,85,247,0.4)] flex flex-col items-center text-center">
+      <div className="relative w-full max-w-sm rounded-3xl bg-slate-900 border-2 border-purple-500/80 p-6 shadow-[0_0_30px_rgba(168,85,247,0.4)] flex flex-col items-center text-center">
+        {/* 閉じるボタン（盤面に戻る） */}
+        <button
+          onClick={closeClearModal}
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+          title="盤面を見る"
+          aria-label="閉じる"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         {/* トロフィーアイコン */}
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] mb-3 animate-bounce">
           <Trophy className="w-9 h-9 fill-current" />
@@ -109,7 +122,7 @@ https://github.com/Bamboosato/app-stroop-route`;
         </div>
 
         {/* 認知機能スコアカード */}
-        <div className="w-full bg-slate-950/60 rounded-2xl p-3 border border-purple-900/50 mb-5 text-left">
+        <div className="w-full bg-slate-950/60 rounded-2xl p-3 border border-purple-900/50 mb-4 text-left">
           <div className="flex items-center gap-1.5 text-xs font-bold text-purple-300 mb-2">
             <Sparkles className="w-3.5 h-3.5 text-purple-400" />
             <span>脳科学スコア獲得</span>
@@ -165,8 +178,17 @@ https://github.com/Bamboosato/app-stroop-route`;
             </button>
 
             <button
+              onClick={closeClearModal}
+              className="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs border border-cyan-500/40 flex items-center justify-center gap-1.5 transition active:scale-95"
+              title="盤面を鑑賞する"
+            >
+              <Eye className="w-3.5 h-3.5 text-cyan-400" />
+              <span>盤面を見る</span>
+            </button>
+
+            <button
               onClick={reset}
-              className="py-2.5 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700/80 flex items-center justify-center gap-1 transition active:scale-95"
+              className="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700/80 flex items-center justify-center gap-1 transition active:scale-95"
               title="もう一度プレイ"
             >
               <RotateCcw className="w-3.5 h-3.5" />

@@ -50,6 +50,7 @@ export interface GameState {
   isReversedMode: boolean;   // 現在反転中かどうか
   timerSeconds: number;
   isCleared: boolean;
+  isClearModalOpen: boolean; // クリアリザルトモーダルの表示フラグ
   isDeadEnd: boolean;        // 手詰まり状態フラグ
   camR: number;              // 現在のカメラ行オフセット (0, 3, 6)
   camC: number;              // 現在のカメラ列オフセット (0, 3, 6)
