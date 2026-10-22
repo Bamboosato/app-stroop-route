@@ -20,6 +20,8 @@ interface GameActions {
   tickTimer: () => void;
   setCamPos: (r: number, c: number) => void;
   shiftCamera: (dr: number, dc: number) => void;
+  openClearModal: () => void;
+  closeClearModal: () => void;
   updateSettings: (partial: Partial<GameSettings>) => void;
 }
 
@@ -72,6 +74,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
     isReversedMode: false,
     timerSeconds: 0,
     isCleared: false,
+    isClearModalOpen: false,
     isDeadEnd: false,
     camR: 0,
     camC: 0,
@@ -97,6 +100,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isReversedMode: false,
         timerSeconds: 0,
         isCleared: false,
+        isClearModalOpen: false,
         isDeadEnd: false,
         camR: 0,
         camC: 0,
@@ -123,6 +127,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isReversedMode: false,
         timerSeconds: 0,
         isCleared: false,
+        isClearModalOpen: false,
         isDeadEnd: false,
         camR: 0,
         camC: 0,
@@ -173,6 +178,12 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       let isDead = false;
       if (isGoal) {
         soundService.playClear();
+        // ゴール直後は1.8秒の余韻ディレイを設けてからモーダルを表示
+        setTimeout(() => {
+          if (get().isCleared) {
+            set({ isClearModalOpen: true });
+          }
+        }, 1800);
       } else {
         isDead = checkDeadEnd(
           targetCell,
@@ -212,6 +223,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         path: newPath,
         isReversedMode: newReversed,
         isCleared: isGoal,
+        isClearModalOpen: false,
         isDeadEnd: isDead,
         moveCount: state.moveCount + 1,
         camR: nextCamR,
@@ -274,6 +286,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         path: [start],
         isReversedMode: false,
         isCleared: false,
+        isClearModalOpen: false,
         isDeadEnd: false,
         moveCount: 0,
         camR: 0,
@@ -325,6 +338,14 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         soundService.playSlide();
         set({ camR: nextR, camC: nextC });
       }
+    },
+
+    openClearModal: () => {
+      set({ isClearModalOpen: true });
+    },
+
+    closeClearModal: () => {
+      set({ isClearModalOpen: false });
     },
 
     updateSettings: (partial: Partial<GameSettings>) => {

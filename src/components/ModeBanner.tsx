@@ -3,14 +3,41 @@
 import React from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { COLOR_DEFS } from '@/lib/constants';
-import { Zap } from 'lucide-react';
+import { Zap, Trophy } from 'lucide-react';
 
 export const ModeBanner: React.FC = () => {
-  const { isReversedMode, path } = useGameStore();
+  const { isReversedMode, path, isCleared } = useGameStore();
   const tipCell = path[path.length - 1];
 
   const wordDef = tipCell ? COLOR_DEFS[tipCell.word] : null;
   const inkDef = tipCell ? COLOR_DEFS[tipCell.ink] : null;
+
+  if (isCleared) {
+    return (
+      <div className="w-full max-w-md mx-auto px-4 py-1 select-none animate-fade-in">
+        <div className="relative overflow-hidden rounded-2xl border px-3 py-2.5 transition-all duration-300 shadow-lg bg-gradient-to-r from-amber-950/80 via-yellow-900/80 to-amber-950/80 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center justify-center w-7 h-7 rounded-xl font-black text-sm shadow-md bg-amber-400 text-slate-950 shadow-[0_0_10px_rgba(245,158,11,0.8)]">
+                <Trophy className="w-4 h-4 fill-current" />
+              </span>
+              <div>
+                <div className="text-xs font-black tracking-wide text-amber-300">
+                  ★ GOAL REACHED!
+                </div>
+                <p className="text-[11px] text-slate-200 font-medium">
+                  一筆書きルート完成！
+                </p>
+              </div>
+            </div>
+            <div className="text-[11px] font-bold text-amber-300 bg-amber-950/60 px-2 py-1 rounded-lg border border-amber-500/50">
+              クリア達成
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto px-4 py-1 select-none">

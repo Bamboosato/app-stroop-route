@@ -11,14 +11,14 @@ import { ClearModal } from '@/components/ClearModal';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StageSelectModal } from '@/components/StageSelectModal';
 import { useKeyboardControls } from '@/hooks/useKeyboardControls';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Trophy } from 'lucide-react';
 
 export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStageSelectOpen, setIsStageSelectOpen] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
 
-  const { tickTimer, isCleared } = useGameStore();
+  const { tickTimer, isCleared, isClearModalOpen, openClearModal } = useGameStore();
 
   // キーボード操作の有効化
   useKeyboardControls();
@@ -47,6 +47,19 @@ export default function Home() {
       <div className="flex-1 flex flex-col items-center justify-center my-auto w-full gap-1">
         <GameBoard />
         <MiniDotHud />
+
+        {/* ゴール後にモーダルを閉じた場合の「結果を見る」ボタン */}
+        {isCleared && !isClearModalOpen && (
+          <div className="w-full max-w-md px-4 mt-2 animate-fade-in">
+            <button
+              onClick={openClearModal}
+              className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition active:scale-95 animate-pulse"
+            >
+              <Trophy className="w-4 h-4 fill-current" />
+              <span>クリア達成！結果・スコアを見る</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 下部フッター ＆ ヘルプ案内 */}
