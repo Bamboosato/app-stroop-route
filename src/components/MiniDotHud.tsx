@@ -9,7 +9,7 @@ export const MiniDotHud: React.FC = () => {
   const { currentStage, camR, camC, setCamPos } = useGameStore();
 
   if (!currentStage.isScrollable) {
-    return null;
+    return <div className="w-full max-w-md mx-auto px-4 py-1.5 h-10 invisible select-none" />;
   }
 
   // 区画数計算

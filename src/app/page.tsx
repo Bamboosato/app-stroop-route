@@ -18,7 +18,15 @@ export default function Home() {
   const [isStageSelectOpen, setIsStageSelectOpen] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
 
-  const { tickTimer, isCleared, isClearModalOpen, openClearModal } = useGameStore();
+  const { tickTimer, isCleared, isClearModalOpen, openClearModal, initStage } = useGameStore();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stg = params.get("stage");
+    if (stg !== null) {
+      initStage(parseInt(stg, 10));
+    }
+  }, [initStage]);
 
   // キーボード操作の有効化
   useKeyboardControls();
