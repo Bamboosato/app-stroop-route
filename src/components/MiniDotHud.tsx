@@ -58,7 +58,7 @@ export const MiniDotHud: React.FC = () => {
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
-            <span className="text-purple-300">⚡</span>
+            <span className="text-white">⚡</span>
             <span className="text-white">GATE</span>
           </span>
           <span className="flex items-center gap-1">

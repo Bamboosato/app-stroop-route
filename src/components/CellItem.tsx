@@ -87,7 +87,7 @@ export const CellItem: React.FC<CellItemProps> = ({
       )}
       {cell.type === 'GATE' && (
         <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black tracking-tighter z-10 ${labelSizeClass}`}>
-          <Zap className="w-2.5 h-2.5 text-purple-400 fill-current" />
+          <Zap className="w-2.5 h-2.5 text-white fill-current" />
           <span className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">反転</span>
         </span>
       )}
