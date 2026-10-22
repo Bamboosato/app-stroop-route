@@ -71,8 +71,13 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  const iconSizeClass =
-    gridSize >= 7 ? 'w-2 h-2' : gridSize === 5 ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5';
+  // 背景ウォーターマーク（透かしアイコン）のサイズ
+  const watermarkSizeClass =
+    gridSize >= 7
+      ? 'w-6 h-6'
+      : gridSize === 5
+      ? 'w-8 h-8 md:w-9 md:h-9'
+      : 'w-11 h-11 md:w-14 md:h-14';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -115,35 +120,26 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* パネル内部の角に配置するシンプルな1文字アイコン（旗・星・稲妻） */}
+      {/* 案A: 背景ウォーターマーク（文字の背後に半透明で大きく敷くことで文字と絶対衝突しない） */}
       {cell.type === 'START' && (
-        <span
-          className="absolute top-1.5 left-2 text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.9)] z-10 pointer-events-none"
-          title="START"
-        >
-          <Flag className={`${iconSizeClass} fill-current`} />
-        </span>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <Flag className={`${watermarkSizeClass} text-emerald-400/18 fill-current drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]`} />
+        </div>
       )}
       {cell.type === 'GOAL' && (
-        <span
-          className="absolute top-1.5 right-2 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)] z-10 pointer-events-none"
-          title="GOAL"
-        >
-          <Star className={`${iconSizeClass} fill-current`} />
-        </span>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <Star className={`${watermarkSizeClass} text-amber-400/18 fill-current drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]`} />
+        </div>
       )}
       {cell.type === 'GATE' && (
-        <span
-          className="absolute top-1.5 left-2 text-purple-300 drop-shadow-[0_0_6px_rgba(192,132,252,0.9)] z-10 pointer-events-none"
-          title="反転ゲート"
-        >
-          <Zap className={`${iconSizeClass} fill-current`} />
-        </span>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <Zap className={`${watermarkSizeClass} text-purple-400/18 fill-current drop-shadow-[0_0_8px_rgba(192,132,252,0.3)]`} />
+        </div>
       )}
 
-      {/* 単語文字（インク色で描画） - パネル内部で邪魔されず堂々と中央配置 */}
+      {/* 単語文字（インク色で描画） - 前面（z-10）で邪魔されず堂々と中央配置 */}
       <span
-        className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
+        className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
         style={{ color: inkDef.hex }}
       >
         {wordDisplay}
