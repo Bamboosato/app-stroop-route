@@ -68,7 +68,7 @@ export const ClearModal: React.FC = () => {
 🧠 抑制制御: +35pt | 認知的柔軟性: +30pt
 ${pathEmojis}
 #StroopRoute #意色交差パズル #脳トレ
-https://github.com/Bamboosato/app-stroop-route`;
+https://stroop-route.vercel.app`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
@@ -162,7 +162,7 @@ https://github.com/Bamboosato/app-stroop-route`;
           <div className="flex gap-2 w-full">
             <button
               onClick={handleShare}
-              className="flex-1 py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700/80 flex items-center justify-center gap-1.5 transition active:scale-95"
+              className="flex-1 py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700/80 flex items-center justify-center gap-1.5 transition active:scale-95 whitespace-nowrap"
             >
               {copied ? (
                 <>
@@ -172,7 +172,7 @@ https://github.com/Bamboosato/app-stroop-route`;
               ) : (
                 <>
                   <Share2 className="w-3.5 h-3.5" />
-                  <span>結果を共有</span>
+                  <span className="whitespace-nowrap">共有</span>
                 </>
               )}
             </button>
