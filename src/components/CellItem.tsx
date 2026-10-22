@@ -3,7 +3,7 @@
 import React from 'react';
 import { Cell } from '@/types/game';
 import { COLOR_DEFS, getWordDisplay } from '@/lib/constants';
-import { Zap, Flag, Star } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 interface CellItemProps {
   cell: Cell;
@@ -71,13 +71,20 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  // 背景ウォーターマーク（透かしアイコン）のサイズ（パネルの大部分を覆うサイズに拡大）
-  const watermarkSizeClass =
+  // 背景ウォーターマーク（S / G 文字および ⚡ アイコン）の適度なサイズ設定
+  const watermarkLetterClass =
     gridSize >= 7
-      ? 'w-8 h-8 md:w-9 md:h-9'
+      ? 'text-2xl md:text-3xl'
       : gridSize === 5
-      ? 'w-11 h-11 md:w-13 md:h-13'
-      : 'w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20';
+      ? 'text-3xl md:text-4xl'
+      : 'text-5xl sm:text-6xl md:text-7xl';
+
+  const watermarkIconClass =
+    gridSize >= 7
+      ? 'w-5 h-5'
+      : gridSize === 5
+      ? 'w-7 h-7'
+      : 'w-10 h-10 md:w-12 md:h-12';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -120,20 +127,30 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* 案A: 背景ウォーターマーク（大判サイズ＆適度な透過度で存在感を向上） */}
+      {/* 背景ウォーターマーク: STARTは「S」、GOALは「G」、GATEは「⚡」 */}
       {cell.type === 'START' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Flag className={`${watermarkSizeClass} text-emerald-400/22 fill-current drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]`} />
+          <span
+            className={`${watermarkLetterClass} font-black font-sans text-emerald-400/18 select-none leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(16,185,129,0.35)]`}
+          >
+            S
+          </span>
         </div>
       )}
       {cell.type === 'GOAL' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Star className={`${watermarkSizeClass} text-amber-400/22 fill-current drop-shadow-[0_0_12px_rgba(251,191,36,0.45)]`} />
+          <span
+            className={`${watermarkLetterClass} font-black font-sans text-amber-400/18 select-none leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(251,191,36,0.35)]`}
+          >
+            G
+          </span>
         </div>
       )}
       {cell.type === 'GATE' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Zap className={`${watermarkSizeClass} text-purple-400/22 fill-current drop-shadow-[0_0_12px_rgba(192,132,252,0.4)]`} />
+          <Zap
+            className={`${watermarkIconClass} text-purple-400/20 fill-current drop-shadow-[0_0_10px_rgba(192,132,252,0.35)]`}
+          />
         </div>
       )}
 
