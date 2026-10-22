@@ -71,13 +71,13 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  // 背景ウォーターマーク（透かしアイコン）のサイズ
+  // 背景ウォーターマーク（透かしアイコン）のサイズ（パネルの大部分を覆うサイズに拡大）
   const watermarkSizeClass =
     gridSize >= 7
-      ? 'w-6 h-6'
-      : gridSize === 5
       ? 'w-8 h-8 md:w-9 md:h-9'
-      : 'w-11 h-11 md:w-14 md:h-14';
+      : gridSize === 5
+      ? 'w-11 h-11 md:w-13 md:h-13'
+      : 'w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -120,20 +120,20 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* 案A: 背景ウォーターマーク（文字の背後に半透明で大きく敷くことで文字と絶対衝突しない） */}
+      {/* 案A: 背景ウォーターマーク（大判サイズ＆適度な透過度で存在感を向上） */}
       {cell.type === 'START' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Flag className={`${watermarkSizeClass} text-emerald-400/18 fill-current drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]`} />
+          <Flag className={`${watermarkSizeClass} text-emerald-400/22 fill-current drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]`} />
         </div>
       )}
       {cell.type === 'GOAL' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Star className={`${watermarkSizeClass} text-amber-400/18 fill-current drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]`} />
+          <Star className={`${watermarkSizeClass} text-amber-400/22 fill-current drop-shadow-[0_0_12px_rgba(251,191,36,0.45)]`} />
         </div>
       )}
       {cell.type === 'GATE' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <Zap className={`${watermarkSizeClass} text-purple-400/18 fill-current drop-shadow-[0_0_8px_rgba(192,132,252,0.3)]`} />
+          <Zap className={`${watermarkSizeClass} text-purple-400/22 fill-current drop-shadow-[0_0_12px_rgba(192,132,252,0.4)]`} />
         </div>
       )}
 
