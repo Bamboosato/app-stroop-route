@@ -181,7 +181,7 @@ export const GameBoard: React.FC = () => {
             className="grid w-full h-full p-2.5"
             style={{
               gridTemplateColumns: `repeat(${currentStage.size}, minmax(0, 1fr))`,
-              gap: currentStage.size >= 7 ? '0.25rem' : currentStage.size === 5 ? '0.375rem' : '0.5rem',
+              gap: '0.5rem',
             }}
           >
             {currentStage.cells.map((cell) => {

@@ -16,8 +16,9 @@ export const MiniDotHud: React.FC = () => {
   // 7x7: 2x2 (オフセット 0, 3)
   // 10x10: 3x3 (オフセット 0, 3, 6)
   const is10x10 = currentStage.size === 10;
+  const is5x5 = currentStage.size === 5;
   const numDivisions = is10x10 ? 3 : 2;
-  const offsets = is10x10 ? [0, 3, 6] : [0, 3];
+  const offsets = is10x10 ? [0, 3, 6] : is5x5 ? [0, 1] : [0, 3];
 
   // 現在の区画インデックス (0, 1, 2)
   const activeRowIdx = offsets.indexOf(camR);

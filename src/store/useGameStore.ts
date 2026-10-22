@@ -55,9 +55,8 @@ function saveSettingsToStorage(settings: GameSettings) {
 }
 
 function getMaxCamOffset(size: number): number {
-  if (size === 7) return 3;
-  if (size === 10) return 6;
-  return 0;
+  if (size <= 4) return 0;
+  return size - 4;
 }
 
 export const useGameStore = create<GameState & GameActions>((set, get) => {
@@ -251,15 +250,16 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       let nextCamC = state.camC;
       if (state.currentStage.isScrollable && tipCell) {
         const maxOffset = getMaxCamOffset(state.currentStage.size);
+        const shiftAmount = state.currentStage.size === 5 ? 1 : 3;
         if (tipCell.r < state.camR) {
-          nextCamR = Math.max(0, state.camR - 3);
+          nextCamR = Math.max(0, state.camR - shiftAmount);
         } else if (tipCell.r >= state.camR + 4) {
-          nextCamR = Math.min(maxOffset, state.camR + 3);
+          nextCamR = Math.min(maxOffset, state.camR + shiftAmount);
         }
         if (tipCell.c < state.camC) {
-          nextCamC = Math.max(0, state.camC - 3);
+          nextCamC = Math.max(0, state.camC - shiftAmount);
         } else if (tipCell.c >= state.camC + 4) {
-          nextCamC = Math.min(maxOffset, state.camC + 3);
+          nextCamC = Math.min(maxOffset, state.camC + shiftAmount);
         }
       }
 
@@ -331,8 +331,9 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       if (!state.currentStage.isScrollable) return;
 
       const maxOffset = getMaxCamOffset(state.currentStage.size);
-      const nextR = Math.max(0, Math.min(maxOffset, state.camR + dr * 3));
-      const nextC = Math.max(0, Math.min(maxOffset, state.camC + dc * 3));
+      const shiftAmount = state.currentStage.size === 5 ? 1 : 3;
+      const nextR = Math.max(0, Math.min(maxOffset, state.camR + dr * shiftAmount));
+      const nextC = Math.max(0, Math.min(maxOffset, state.camC + dc * shiftAmount));
 
       if (nextR !== state.camR || nextC !== state.camC) {
         soundService.playSlide();
