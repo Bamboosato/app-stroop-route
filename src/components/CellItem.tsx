@@ -27,7 +27,7 @@ export const CellItem: React.FC<CellItemProps> = ({
   const inkDef = COLOR_DEFS[cell.ink];
   const wordDisplay = getWordDisplay(cell.word, cell.notation);
 
-  // 文字数およびグリッドサイズ（4x4 vs 5x5以上）に応じたフォントサイズの動的最適化
+  // 文字数およびグリッドサイズに応じたフォントサイズの動的最適化
   const charCount = wordDisplay.length;
   let dynamicFontSize = 'text-2xl md:text-3xl';
   let trackingClass = 'tracking-normal';
@@ -71,9 +71,18 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  const labelSizeClass = gridSize >= 7 ? 'text-[8px]' : gridSize === 5 ? 'text-[9px]' : 'text-[10px]';
+  // 上枠線バッジのサイズクラス
+  const badgeSizeClass =
+    gridSize >= 7
+      ? 'text-[7px] px-1 py-0'
+      : gridSize === 5
+      ? 'text-[8px] px-1 py-0.2'
+      : 'text-[9px] px-1.5 py-0.5';
 
-  // セルの背景スタイル（背後の接続線が見通せるよう程よい透過度を維持）
+  const iconSizeClass =
+    gridSize >= 7 ? 'w-2 h-2' : gridSize === 5 ? 'w-2 h-2' : 'w-2.5 h-2.5';
+
+  // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
   let borderStyle = 'border-slate-800';
 
@@ -114,27 +123,27 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* セルバッジ（START / GOAL / GATE） - z-10で常に前面 */}
+      {/* パネル上部の枠線の上に配置されるフローティングバッジ（START / GOAL / GATE） */}
       {cell.type === 'START' && (
-        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-emerald-400 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
-          <Flag className="w-2.5 h-2.5" />
-          START
-        </span>
+        <div className={`absolute -top-2.5 left-2 flex items-center gap-0.5 font-black uppercase tracking-tighter bg-slate-950 border border-emerald-500/80 text-emerald-400 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20 ${badgeSizeClass}`}>
+          <Flag className={iconSizeClass} />
+          <span>START</span>
+        </div>
       )}
       {cell.type === 'GOAL' && (
-        <span className={`absolute top-1 right-1.5 flex items-center gap-0.5 font-black text-amber-300 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
-          <Star className="w-2.5 h-2.5 fill-current" />
-          GOAL
-        </span>
+        <div className={`absolute -top-2.5 right-2 flex items-center gap-0.5 font-black uppercase tracking-tighter bg-slate-950 border border-amber-400/90 text-amber-300 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.45)] z-20 ${badgeSizeClass}`}>
+          <Star className={`${iconSizeClass} fill-current`} />
+          <span>GOAL</span>
+        </div>
       )}
       {cell.type === 'GATE' && (
-        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-purple-300 tracking-tighter z-10 ${labelSizeClass}`}>
-          <Zap className="w-2.5 h-2.5 fill-current" />
-          反転
-        </span>
+        <div className={`absolute -top-2.5 left-2 flex items-center gap-0.5 font-black tracking-tighter bg-slate-950 border border-purple-400/90 text-purple-300 rounded-full shadow-[0_0_8px_rgba(192,132,252,0.4)] z-20 ${badgeSizeClass}`}>
+          <Zap className={`${iconSizeClass} fill-current`} />
+          <span>反転</span>
+        </div>
       )}
 
-      {/* 単語文字（インク色で描画） - z-10 & text-center & whitespace-nowrap で確実に中央配置 */}
+      {/* 単語文字（インク色で描画） - パネル内部の全領域を使って堂々と中央配置 */}
       <span
         className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
         style={{ color: inkDef.hex }}

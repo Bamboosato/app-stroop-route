@@ -140,16 +140,10 @@ export const GameBoard: React.FC = () => {
   }, [isDrawingPath, isScrollable, shiftCamera]);
 
   // グリッドとファインダーのサイズ計算
-  // 非スクロール時（4x4 or 5x5）: 画面内に全マス固定表示
-  // スクロール時（7x7 or 10x10）: 4x4ファインダー内に一部を表示し、Transformでスライド
   const isFixedGrid = !isScrollable;
-
-  // 1マスあたりのパーセンテージ幅
-  // 4x4ファインダー基準: 1マス = 25% (4マスで100%)
-  const cellPercent = isFixedGrid ? 100 / currentStage.size : 25;
   const labyrinthPercentSize = isFixedGrid ? 100 : (currentStage.size / 4) * 100;
 
-  // カメラTransform計算 (4x4ファインダー基準で camR, camC 分スライド)
+  // カメラTransform計算
   const translateX = isScrollable ? -(camC * 25) : 0;
   const translateY = isScrollable ? -(camR * 25) : 0;
 
@@ -182,9 +176,9 @@ export const GameBoard: React.FC = () => {
             isReversedMode={isReversedMode}
           />
 
-          {/* 全マスグリッド */}
+          {/* 全マスグリッド（フローティングバッジ用に上部パディングをpt-3.5に確保） */}
           <div
-            className="grid w-full h-full p-2.5"
+            className="grid w-full h-full pt-3.5 pb-2.5 px-2.5"
             style={{
               gridTemplateColumns: `repeat(${currentStage.size}, minmax(0, 1fr))`,
               gap: currentStage.size >= 7 ? '0.25rem' : currentStage.size === 5 ? '0.375rem' : '0.5rem',
