@@ -3,7 +3,7 @@
 import React from 'react';
 import { Cell } from '@/types/game';
 import { COLOR_DEFS, getWordDisplay } from '@/lib/constants';
-import { Zap } from 'lucide-react';
+import { Zap, Flag, Star } from 'lucide-react';
 
 interface CellItemProps {
   cell: Cell;
@@ -27,64 +27,23 @@ export const CellItem: React.FC<CellItemProps> = ({
   const inkDef = COLOR_DEFS[cell.ink];
   const wordDisplay = getWordDisplay(cell.word, cell.notation);
 
-  // 文字数およびグリッドサイズに応じたフォントサイズの動的最適化
-  const charCount = wordDisplay.length;
-  let dynamicFontSize = 'text-2xl md:text-3xl';
-  let trackingClass = 'tracking-normal';
+  // パネル内の文字サイズは文字数にかかわらず「4文字のときのサイズ」にすべて統一
+  let dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
+  let trackingClass = 'tracking-tighter';
 
   if (gridSize >= 7) {
-    if (charCount >= 4) {
-      dynamicFontSize = 'text-[9px] md:text-[10px] leading-tight';
-      trackingClass = 'tracking-tighter';
-    } else if (charCount === 3) {
-      dynamicFontSize = 'text-[11px] md:text-xs';
-      trackingClass = 'tracking-tight';
-    } else if (charCount === 2) {
-      dynamicFontSize = 'text-sm md:text-base';
-    } else {
-      dynamicFontSize = 'text-base md:text-lg';
-    }
+    dynamicFontSize = 'text-[9px] md:text-[10px] leading-tight';
+    trackingClass = 'tracking-tighter';
   } else if (gridSize === 5) {
-    if (charCount >= 4) {
-      dynamicFontSize = 'text-xs md:text-sm leading-tight';
-      trackingClass = 'tracking-tighter';
-    } else if (charCount === 3) {
-      dynamicFontSize = 'text-sm md:text-base';
-      trackingClass = 'tracking-tight';
-    } else if (charCount === 2) {
-      dynamicFontSize = 'text-lg md:text-xl';
-    } else {
-      dynamicFontSize = 'text-xl md:text-2xl';
-    }
+    dynamicFontSize = 'text-xs md:text-sm leading-tight';
+    trackingClass = 'tracking-tighter';
   } else {
     // 4x4
-    if (charCount >= 4) {
-      dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
-      trackingClass = 'tracking-tighter';
-    } else if (charCount === 3) {
-      dynamicFontSize = 'text-xl sm:text-2xl md:text-2xl';
-      trackingClass = 'tracking-tight';
-    } else if (charCount === 2) {
-      dynamicFontSize = 'text-2xl sm:text-3xl md:text-3xl';
-    } else {
-      dynamicFontSize = 'text-3xl sm:text-4xl md:text-4xl';
-    }
+    dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
+    trackingClass = 'tracking-tighter';
   }
 
-  // 背景ウォーターマーク（S / G 文字および ⚡ アイコン）の適度なサイズ設定
-  const watermarkLetterClass =
-    gridSize >= 7
-      ? 'text-xl md:text-2xl'
-      : gridSize === 5
-      ? 'text-2xl sm:text-3xl md:text-3xl'
-      : 'text-4xl sm:text-5xl';
-
-  const watermarkIconClass =
-    gridSize >= 7
-      ? 'w-5 h-5'
-      : gridSize === 5
-      ? 'w-7 h-7'
-      : 'w-10 h-10 md:w-12 md:h-12';
+  const labelSizeClass = gridSize >= 7 ? 'text-[8px]' : gridSize === 5 ? 'text-[9px]' : 'text-[10px]';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -127,34 +86,27 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* 背景ウォーターマーク: STARTは「S」、GOALは「G」、GATEは「⚡」 */}
+      {/* セルバッジ（START / GOAL / GATE: アイコン＋文字を上部に表示） - z-10で常に前面 */}
       {cell.type === 'START' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
-          <span
-            className={`${watermarkLetterClass} font-light font-sans text-emerald-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]`}
-          >
-            S
-          </span>
-        </div>
+        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-emerald-400 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
+          <Flag className="w-2.5 h-2.5" />
+          START
+        </span>
       )}
       {cell.type === 'GOAL' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
-          <span
-            className={`${watermarkLetterClass} font-light font-sans text-amber-400/45 select-none leading-none tracking-normal drop-shadow-[0_0_12px_rgba(251,191,36,0.4)]`}
-          >
-            G
-          </span>
-        </div>
+        <span className={`absolute top-1 right-1.5 flex items-center gap-0.5 font-black text-amber-300 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
+          <Star className="w-2.5 h-2.5 fill-current" />
+          GOAL
+        </span>
       )}
       {cell.type === 'GATE' && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden rounded-2xl">
-          <Zap
-            className={`${watermarkIconClass} text-purple-400/20 fill-current drop-shadow-[0_0_10px_rgba(192,132,252,0.35)]`}
-          />
-        </div>
+        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-purple-300 tracking-tighter z-10 ${labelSizeClass}`}>
+          <Zap className="w-2.5 h-2.5 fill-current" />
+          反転
+        </span>
       )}
 
-      {/* 単語文字（インク色で描画） - 前面（z-10）で邪魔されず堂々と中央配置 */}
+      {/* 単語文字（インク色で描画） - 4文字サイズに統一され、上部バッジとも干渉せず中央配置 */}
       <span
         className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
         style={{ color: inkDef.hex }}
