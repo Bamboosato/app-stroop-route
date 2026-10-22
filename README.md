@@ -2,6 +2,10 @@
 
 <div align="center">
 
+<img src="public/icon-512x512.png" width="120" height="120" alt="Stroop Route Icon" style="border-radius: 26px;" />
+<br />
+<br />
+
 ![Next.js](https://img.shields.io/badge/Next.js-16.4.2-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React-19.3.0-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)
