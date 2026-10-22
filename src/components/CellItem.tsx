@@ -71,12 +71,8 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  // 上枠線ラベルのフォントサイズ
-  const labelSizeClass =
-    gridSize >= 7 ? 'text-[7px]' : gridSize === 5 ? 'text-[8px]' : 'text-[9px] sm:text-[10px]';
-
   const iconSizeClass =
-    gridSize >= 7 ? 'w-2 h-2' : gridSize === 5 ? 'w-2 h-2' : 'w-2.5 h-2.5';
+    gridSize >= 7 ? 'w-2 h-2' : gridSize === 5 ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5';
 
   // セルの背景スタイル
   let bgStyle = 'bg-slate-900/60';
@@ -119,27 +115,33 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* 上枠線の上に直接乗るスッキリしたラベル（囲い線なし・背景マスクで上枠線に配置） */}
+      {/* パネル内部の角に配置するシンプルな1文字アイコン（旗・星・稲妻） */}
       {cell.type === 'START' && (
-        <div className={`absolute top-0 -translate-y-1/2 left-3 flex items-center gap-1 font-black uppercase tracking-wider bg-slate-950 px-1.5 text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)] z-20 leading-none ${labelSizeClass}`}>
-          <Flag className={iconSizeClass} />
-          <span>START</span>
-        </div>
+        <span
+          className="absolute top-1.5 left-2 text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.9)] z-10 pointer-events-none"
+          title="START"
+        >
+          <Flag className={`${iconSizeClass} fill-current`} />
+        </span>
       )}
       {cell.type === 'GOAL' && (
-        <div className={`absolute top-0 -translate-y-1/2 right-3 flex items-center gap-1 font-black uppercase tracking-wider bg-slate-950 px-1.5 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] z-20 leading-none ${labelSizeClass}`}>
+        <span
+          className="absolute top-1.5 right-2 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)] z-10 pointer-events-none"
+          title="GOAL"
+        >
           <Star className={`${iconSizeClass} fill-current`} />
-          <span>GOAL</span>
-        </div>
+        </span>
       )}
       {cell.type === 'GATE' && (
-        <div className={`absolute top-0 -translate-y-1/2 left-3 flex items-center gap-1 font-black tracking-wider bg-slate-950 px-1.5 text-purple-300 drop-shadow-[0_0_6px_rgba(192,132,252,0.8)] z-20 leading-none ${labelSizeClass}`}>
+        <span
+          className="absolute top-1.5 left-2 text-purple-300 drop-shadow-[0_0_6px_rgba(192,132,252,0.9)] z-10 pointer-events-none"
+          title="反転ゲート"
+        >
           <Zap className={`${iconSizeClass} fill-current`} />
-          <span>反転</span>
-        </div>
+        </span>
       )}
 
-      {/* 単語文字（インク色で描画） - パネル内部の全領域を使って堂々と中央配置 */}
+      {/* 単語文字（インク色で描画） - パネル内部で邪魔されず堂々と中央配置 */}
       <span
         className={`relative z-10 w-full text-center flex items-center justify-center font-black whitespace-nowrap select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] filter drop-shadow-[0_0_8px_currentColor] transition-transform ${dynamicFontSize} ${trackingClass}`}
         style={{ color: inkDef.hex }}
