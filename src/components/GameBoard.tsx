@@ -176,9 +176,9 @@ export const GameBoard: React.FC = () => {
             isReversedMode={isReversedMode}
           />
 
-          {/* 全マスグリッド（フローティングバッジ用に上部パディングをpt-3.5に確保） */}
+          {/* 全マスグリッド（上部バッジが角丸に隠れないようpt-4で適度な余白を確保） */}
           <div
-            className="grid w-full h-full pt-3.5 pb-2.5 px-2.5"
+            className="grid w-full h-full pt-4 pb-3 px-3"
             style={{
               gridTemplateColumns: `repeat(${currentStage.size}, minmax(0, 1fr))`,
               gap: currentStage.size >= 7 ? '0.25rem' : currentStage.size === 5 ? '0.375rem' : '0.5rem',

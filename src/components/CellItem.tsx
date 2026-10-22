@@ -71,13 +71,9 @@ export const CellItem: React.FC<CellItemProps> = ({
     }
   }
 
-  // 上枠線バッジのサイズクラス
-  const badgeSizeClass =
-    gridSize >= 7
-      ? 'text-[7px] px-1 py-0'
-      : gridSize === 5
-      ? 'text-[8px] px-1 py-0.2'
-      : 'text-[9px] px-1.5 py-0.5';
+  // 上枠線ラベルのフォントサイズ
+  const labelSizeClass =
+    gridSize >= 7 ? 'text-[7px]' : gridSize === 5 ? 'text-[8px]' : 'text-[9px] sm:text-[10px]';
 
   const iconSizeClass =
     gridSize >= 7 ? 'w-2 h-2' : gridSize === 5 ? 'w-2 h-2' : 'w-2.5 h-2.5';
@@ -123,21 +119,21 @@ export const CellItem: React.FC<CellItemProps> = ({
         <span className="absolute inset-0 rounded-2xl border-2 border-emerald-400 pointer-events-none shadow-[0_0_10px_rgba(52,211,153,0.6)]" />
       )}
 
-      {/* パネル上部の枠線の上に配置されるフローティングバッジ（START / GOAL / GATE） */}
+      {/* 上枠線の上に直接乗るスッキリしたラベル（囲い線なし・背景マスクで上枠線に配置） */}
       {cell.type === 'START' && (
-        <div className={`absolute -top-2.5 left-2 flex items-center gap-0.5 font-black uppercase tracking-tighter bg-slate-950 border border-emerald-500/80 text-emerald-400 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20 ${badgeSizeClass}`}>
+        <div className={`absolute top-0 -translate-y-1/2 left-3 flex items-center gap-1 font-black uppercase tracking-wider bg-slate-950 px-1.5 text-emerald-400 drop-shadow-[0_0_6px_rgba(16,185,129,0.8)] z-20 leading-none ${labelSizeClass}`}>
           <Flag className={iconSizeClass} />
           <span>START</span>
         </div>
       )}
       {cell.type === 'GOAL' && (
-        <div className={`absolute -top-2.5 right-2 flex items-center gap-0.5 font-black uppercase tracking-tighter bg-slate-950 border border-amber-400/90 text-amber-300 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.45)] z-20 ${badgeSizeClass}`}>
+        <div className={`absolute top-0 -translate-y-1/2 right-3 flex items-center gap-1 font-black uppercase tracking-wider bg-slate-950 px-1.5 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)] z-20 leading-none ${labelSizeClass}`}>
           <Star className={`${iconSizeClass} fill-current`} />
           <span>GOAL</span>
         </div>
       )}
       {cell.type === 'GATE' && (
-        <div className={`absolute -top-2.5 left-2 flex items-center gap-0.5 font-black tracking-tighter bg-slate-950 border border-purple-400/90 text-purple-300 rounded-full shadow-[0_0_8px_rgba(192,132,252,0.4)] z-20 ${badgeSizeClass}`}>
+        <div className={`absolute top-0 -translate-y-1/2 left-3 flex items-center gap-1 font-black tracking-wider bg-slate-950 px-1.5 text-purple-300 drop-shadow-[0_0_6px_rgba(192,132,252,0.8)] z-20 leading-none ${labelSizeClass}`}>
           <Zap className={`${iconSizeClass} fill-current`} />
           <span>反転</span>
         </div>
