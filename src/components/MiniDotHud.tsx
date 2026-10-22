@@ -3,7 +3,6 @@
 import React from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { soundService } from '@/lib/sound';
-import { Compass } from 'lucide-react';
 
 export const MiniDotHud: React.FC = () => {
   const { currentStage, camR, camC, setCamPos } = useGameStore();
@@ -19,41 +18,25 @@ export const MiniDotHud: React.FC = () => {
 
   let numDivisions = 2;
   let offsets = [0, 3];
+  let dotSizeClass = 'w-2 h-2';
 
   if (!isScrollable) {
     numDivisions = 1;
     offsets = [0];
+    dotSizeClass = 'w-2.5 h-2.5';
   } else if (is10x10) {
     numDivisions = 3;
     offsets = [0, 3, 6];
+    dotSizeClass = 'w-1.5 h-1.5';
   } else if (is5x5) {
     numDivisions = 2;
     offsets = [0, 1];
+    dotSizeClass = 'w-2 h-2';
   }
 
   // 現在の区画インデックス
   const activeRowIdx = offsets.indexOf(camR);
   const activeColIdx = offsets.indexOf(camC);
-
-  // 九方位テキストの判定
-  let quadrantName = '全体';
-  if (!isScrollable) {
-    quadrantName = '全体';
-  } else if (is10x10) {
-    const names = [
-      ['北西', '北', '北東'],
-      ['西', '中央', '東'],
-      ['南西', '南', '南東'],
-    ];
-    quadrantName = names[activeRowIdx]?.[activeColIdx] || '中央';
-  } else {
-    // 2x2
-    const names = [
-      ['北西', '北東'],
-      ['南西', '南東'],
-    ];
-    quadrantName = names[activeRowIdx]?.[activeColIdx] || '北西';
-  }
 
   const handleDotClick = (rOffset: number, cOffset: number) => {
     if (!isScrollable) return;
@@ -64,27 +47,28 @@ export const MiniDotHud: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 h-11 flex items-center justify-between bg-slate-900/80 border border-slate-800/80 rounded-2xl text-xs select-none">
-      {/* 凡例アイコン（全ステージで統一表示） */}
-      <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400">
-        <span className="flex items-center gap-1 text-emerald-400">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          START
-        </span>
-        <span className="flex items-center gap-1 text-purple-400">
-          <span className="w-2 h-2 rounded-full bg-purple-500" />
-          ⚡GATE
-        </span>
-        <span className="flex items-center gap-1 text-amber-400">
-          <span className="w-2 h-2 rounded-full bg-amber-500" />
-          GOAL
-        </span>
-      </div>
+    <div className="w-full max-w-md mx-auto px-4 select-none">
+      {/* 紫ネオン枠やモードバナーと完全に同一の横幅・角丸・枠線 */}
+      <div className="w-full h-11 px-4 flex items-center justify-between bg-slate-900/80 border border-slate-800/80 rounded-2xl text-xs shadow-md">
+        {/* 凡例アイコン（全ステージで統一表示） */}
+        <div className="flex items-center gap-2.5 text-[11px] font-bold text-slate-300">
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.7)]" />
+            <span className="text-white">START</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
+            <span className="text-purple-300">⚡</span>
+            <span className="text-white">GATE</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.7)]" />
+            <span className="text-white">GOAL</span>
+          </span>
+        </div>
 
-      {/* ミニドットピクト ＆ 方位バッジ */}
-      <div className="flex items-center gap-3">
-        {/* 固定寸法のドットピクトコンテナ (全ステージで高さ32px・幅32px完全統一) */}
-        <div className="w-8 h-8 flex items-center justify-center">
+        {/* ミニドットピクト (固定寸法 w-9 h-9 で全ステージ縦幅44px完全統一・重なり解消) */}
+        <div className="w-9 h-9 flex items-center justify-center">
           <div
             className="grid gap-1 p-1 bg-slate-950 rounded-lg border border-slate-800"
             style={{
@@ -102,7 +86,7 @@ export const MiniDotHud: React.FC = () => {
                     key={`${rOff}-${cOff}`}
                     onClick={() => handleDotClick(rOff, cOff)}
                     disabled={!isScrollable}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    className={`${dotSizeClass} rounded-full transition-all shrink-0 ${
                       isActive
                         ? 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)] scale-110'
                         : 'bg-slate-700 hover:bg-slate-500'
@@ -117,12 +101,6 @@ export const MiniDotHud: React.FC = () => {
               })
             )}
           </div>
-        </div>
-
-        {/* 固定寸法の方位バッジ (全ステージで高さ28px完全統一) */}
-        <div className="h-7 flex items-center gap-1 bg-slate-800/90 border border-cyan-500/50 px-2 rounded-xl text-cyan-300 font-bold shadow-[0_0_8px_rgba(6,182,212,0.2)]">
-          <Compass className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="font-mono text-xs tracking-wider">[{quadrantName}]</span>
         </div>
       </div>
     </div>
