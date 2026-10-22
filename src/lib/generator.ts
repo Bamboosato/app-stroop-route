@@ -17,6 +17,7 @@ export interface GenerateOptions {
 
 /**
  * 自己交差のないスタート(0,0)からゴール(size-1, size-1)へのパスを探索生成
+ * 探索ステップ数上限（500）を設けてハング・無限再帰を完全防止
  */
 function findPath(
   size: number,
@@ -25,18 +26,23 @@ function findPath(
 ): { r: number; c: number }[] | null {
   const visited = new Set<string>();
   const path: { r: number; c: number }[] = [];
+  let stepCount = 0;
+  const MAX_STEPS = 500;
 
   function toKey(r: number, c: number) {
     return `${r},${c}`;
   }
 
   function dfs(r: number, c: number): boolean {
+    stepCount++;
+    if (stepCount > MAX_STEPS) return false;
+
     path.push({ r, c });
     visited.add(toKey(r, c));
 
     // ゴール到達チェック
     if (r === size - 1 && c === size - 1) {
-      if (path.length >= targetLength) {
+      if (path.length >= Math.min(targetLength, (size - 1) * 2)) {
         return true;
       }
     }
@@ -62,9 +68,10 @@ function findPath(
   }
 
   // 複数回試行（リトライ）
-  for (let attempt = 0; attempt < 50; attempt++) {
+  for (let attempt = 0; attempt < 20; attempt++) {
     visited.clear();
     path.length = 0;
+    stepCount = 0;
     if (dfs(0, 0)) {
       return [...path];
     }
@@ -109,7 +116,7 @@ export function generateStage(opts: GenerateOptions): Stage {
   // 1. パス探索生成
   let path = findPath(opts.size, opts.targetLength, rng);
   if (!path) {
-    // フォールバック: 単純なマンハッタン進行パス
+    // 高速フォールバック: ジグザグ進行パス（確実に解が存在）
     path = [];
     let curR = 0;
     let curC = 0;
@@ -123,11 +130,6 @@ export function generateStage(opts: GenerateOptions): Stage {
       path.push({ r: curR, c: curC });
     }
   }
-
-  const pathKeys = new Map<string, number>();
-  path.forEach((p, idx) => {
-    pathKeys.set(`${p.r},${p.c}`, idx);
-  });
 
   // 2. ゲートの配置
   const gateIndices = new Set<number>();
