@@ -74,21 +74,21 @@ export const CellItem: React.FC<CellItemProps> = ({
 
       {/* セルバッジ（START / GOAL / GATE: アイコン＋文字を上部に表示） - z-10で常に前面 */}
       {cell.type === 'START' && (
-        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-emerald-400 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
-          <Flag className="w-2.5 h-2.5" />
-          START
+        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black uppercase tracking-tighter z-10 ${labelSizeClass}`}>
+          <Flag className="w-2.5 h-2.5 text-white fill-current" />
+          <span className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">START</span>
         </span>
       )}
       {cell.type === 'GOAL' && (
-        <span className={`absolute top-1 right-1.5 flex items-center gap-0.5 font-black text-amber-300 uppercase tracking-tighter z-10 ${labelSizeClass}`}>
-          <Star className="w-2.5 h-2.5 fill-current" />
-          GOAL
+        <span className={`absolute top-1 right-1.5 flex items-center gap-0.5 font-black uppercase tracking-tighter z-10 ${labelSizeClass}`}>
+          <Star className="w-2.5 h-2.5 text-white fill-current" />
+          <span className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">GOAL</span>
         </span>
       )}
       {cell.type === 'GATE' && (
-        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black text-purple-300 tracking-tighter z-10 ${labelSizeClass}`}>
-          <Zap className="w-2.5 h-2.5 fill-current" />
-          反転
+        <span className={`absolute top-1 left-1.5 flex items-center gap-0.5 font-black tracking-tighter z-10 ${labelSizeClass}`}>
+          <Zap className="w-2.5 h-2.5 text-purple-400 fill-current" />
+          <span className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">反転</span>
         </span>
       )}
 
