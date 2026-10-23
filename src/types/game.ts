@@ -1,5 +1,5 @@
 export type ColorId = 'RED' | 'BLUE' | 'GREEN' | 'YELLOW' | 'PURPLE';
-export type NotationType = 'hiragana' | 'katakana' | 'kanji';
+export type NotationType = 'hiragana' | 'katakana' | 'kanji' | 'english';
 
 export interface ColorDef {
   id: ColorId;
@@ -7,6 +7,7 @@ export interface ColorDef {
   kana: string;
   kata: string;
   kanji: string;
+  en: string;
   hex: string;
   borderHex: string;
   label: string;

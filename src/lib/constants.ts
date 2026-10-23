@@ -7,6 +7,7 @@ export const COLOR_DEFS: Record<ColorId, ColorDef> = {
     kana: 'あか',
     kata: 'アカ',
     kanji: '赤',
+    en: 'RED',
     hex: '#f87171',
     borderHex: '#ef4444',
     label: '赤',
@@ -17,6 +18,7 @@ export const COLOR_DEFS: Record<ColorId, ColorDef> = {
     kana: 'あお',
     kata: 'アオ',
     kanji: '青',
+    en: 'BLUE',
     hex: '#60a5fa',
     borderHex: '#3b82f6',
     label: '青',
@@ -27,6 +29,7 @@ export const COLOR_DEFS: Record<ColorId, ColorDef> = {
     kana: 'みどり',
     kata: 'ミドリ',
     kanji: '緑',
+    en: 'GREEN',
     hex: '#34d399',
     borderHex: '#10b981',
     label: '緑',
@@ -37,6 +40,7 @@ export const COLOR_DEFS: Record<ColorId, ColorDef> = {
     kana: 'きいろ',
     kata: 'キイロ',
     kanji: '黄',
+    en: 'YELLOW',
     hex: '#fbbf24',
     borderHex: '#f59e0b',
     label: '黄',
@@ -47,6 +51,7 @@ export const COLOR_DEFS: Record<ColorId, ColorDef> = {
     kana: 'むらさき',
     kata: 'ムラサキ',
     kanji: '紫',
+    en: 'PURPLE',
     hex: '#c084fc',
     borderHex: '#a855f7',
     label: '紫',
@@ -69,6 +74,8 @@ export function getWordDisplay(
   const def = COLOR_DEFS[wordId];
   if (!def) return '';
   switch (notation) {
+    case 'english':
+      return def.en;
     case 'katakana':
       return def.kata;
     case 'kanji':

@@ -11,7 +11,7 @@ export interface GenerateOptions {
   description: string;
   gateCount: number;
   targetLength: number;
-  notationRule: 'hiragana' | 'mixed_kana' | 'mixed_all';
+  notationRule: 'hiragana' | 'mixed_kana' | 'mixed_all' | 'english' | 'mixed_global';
   seed: number | string;
 }
 
@@ -84,17 +84,26 @@ function findPath(
  * 表記法をルールと乱数に基づいて決定
  */
 function pickNotation(
-  rule: 'hiragana' | 'mixed_kana' | 'mixed_all',
+  rule: 'hiragana' | 'mixed_kana' | 'mixed_all' | 'english' | 'mixed_global',
   rng: () => number
 ): NotationType {
   if (rule === 'hiragana') return 'hiragana';
+  if (rule === 'english') return 'english';
   if (rule === 'mixed_kana') {
     return rng() < 0.5 ? 'hiragana' : 'katakana';
   }
+  if (rule === 'mixed_all') {
+    const r = rng();
+    if (r < 0.33) return 'hiragana';
+    if (r < 0.66) return 'katakana';
+    return 'kanji';
+  }
+  // mixed_global: 4表記（ひらがな・カタカナ・漢字・英語）均等混合 (各25%)
   const r = rng();
-  if (r < 0.33) return 'hiragana';
-  if (r < 0.66) return 'katakana';
-  return 'kanji';
+  if (r < 0.25) return 'hiragana';
+  if (r < 0.5) return 'katakana';
+  if (r < 0.75) return 'kanji';
+  return 'english';
 }
 
 /**

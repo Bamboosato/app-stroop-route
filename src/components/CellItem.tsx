@@ -27,7 +27,10 @@ export const CellItem: React.FC<CellItemProps> = ({
   const wordDisplay = getWordDisplay(cell.word, cell.notation);
 
   // パネル内の文字サイズおよびバッジサイズはステージ・文字数にかかわらず完全に統一
-  const dynamicFontSize = 'text-base sm:text-lg md:text-xl leading-tight';
+  const isLongWord = wordDisplay.length >= 6;
+  const dynamicFontSize = isLongWord
+    ? 'text-xs sm:text-sm md:text-base leading-tight'
+    : 'text-base sm:text-lg md:text-xl leading-tight';
   const trackingClass = 'tracking-tighter';
   const labelSizeClass = 'text-[10px]';
 
