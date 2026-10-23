@@ -99,16 +99,16 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 中段: タイマー ＆ 手数 ＆ コントロール（横幅をフル活用した大型表示） */}
-      <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-2.5 shadow-inner">
+      <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-2 sm:py-2.5 shadow-inner">
         {/* タイマー ＆ 手数 */}
         <div className="flex items-center gap-5 sm:gap-6 font-mono">
           <div className="flex items-center gap-2 text-cyan-300 font-black" title="経過時間">
-            <Clock className="w-5 h-5 text-cyan-400 shrink-0" />
-            <span className="text-lg sm:text-xl tracking-tight tabular-nums">{formatTime(timerSeconds)}</span>
+            <Clock className="w-6 h-6 text-cyan-400 shrink-0" />
+            <span className="text-2xl sm:text-3xl tracking-tight tabular-nums leading-none">{formatTime(timerSeconds)}</span>
           </div>
           <div className="flex items-center gap-2 text-purple-300 font-black" title="手数">
-            <Footprints className="w-5 h-5 text-purple-400 shrink-0" />
-            <span className="text-lg sm:text-xl tracking-tight tabular-nums">{moveCount}手</span>
+            <Footprints className="w-6 h-6 text-purple-400 shrink-0" />
+            <span className="text-2xl sm:text-3xl tracking-tight tabular-nums leading-none">{moveCount.toString().padStart(3, '0')}</span>
           </div>
         </div>
 
@@ -120,14 +120,14 @@ export const Header: React.FC<HeaderProps> = ({
             className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 disabled:opacity-30 disabled:pointer-events-none transition active:scale-90 border border-slate-700/60 shadow-sm"
             title="1手戻す (Z)"
           >
-            <Undo2 className="w-4 h-4" />
+            <Undo2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
             onClick={reset}
             className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-rose-400 transition active:scale-90 border border-slate-700/60 shadow-sm"
             title="リセット (R)"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
