@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={onOpenStageSelect}
-            className="text-xs font-bold text-slate-200 px-1 whitespace-nowrap hover:text-cyan-400 transition"
+            className="text-sm font-bold text-slate-200 px-1 whitespace-nowrap hover:text-cyan-400 transition"
           >
             {displayTitle}
           </button>
@@ -108,30 +108,30 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* タイマー ＆ 手数 */}
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <div className="flex items-center gap-1 text-cyan-400">
-            <Clock className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-3 text-sm font-mono font-semibold">
+          <div className="flex items-center gap-1.5 text-cyan-400">
+            <Clock className="w-4 h-4" />
             <span>{formatTime(timerSeconds)}</span>
           </div>
-          <div className="flex items-center gap-1 text-purple-300">
-            <Footprints className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 text-purple-300">
+            <Footprints className="w-4 h-4" />
             <span>{moveCount}手</span>
           </div>
         </div>
 
         {/* コントロール: Undo & Reset */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={undo}
             disabled={!canUndo}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 disabled:opacity-30 disabled:pointer-events-none transition active:scale-90"
+            className="p-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 disabled:opacity-30 disabled:pointer-events-none transition active:scale-90 border border-slate-700/60"
             title="1手戻す (Z)"
           >
             <Undo2 className="w-4 h-4" />
           </button>
           <button
             onClick={reset}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-rose-400 transition active:scale-90"
+            className="p-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-rose-400 transition active:scale-90 border border-slate-700/60"
             title="リセット (R)"
           >
             <RotateCcw className="w-4 h-4" />
