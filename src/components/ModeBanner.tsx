@@ -49,20 +49,20 @@ export const ModeBanner: React.FC = () => {
         }`}
       >
         <div className="flex items-center justify-between gap-2">
-          {/* 左側: アイコン廃止 ➔ 通常ルール: 文字➔色 / 反転ルール: 色➔文字 を特大1行表示 */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* 左側: バッジ表示（通常ルール / 反転ルール） ＆ 大文字ルール方針 */}
+          <div className="flex items-center gap-2 shrink-0">
             <span
-              className={`text-sm sm:text-base font-black ${
+              className={`px-2.5 py-0.5 rounded-lg text-xs sm:text-sm font-black tracking-wider border shadow-sm shrink-0 ${
                 isReversedMode
-                  ? 'text-fuchsia-400 drop-shadow-[0_0_8px_rgba(217,70,239,0.6)]'
-                  : 'text-cyan-400'
+                  ? 'bg-fuchsia-950/90 border-fuchsia-400/80 text-fuchsia-200 shadow-[0_0_10px_rgba(217,70,239,0.5)]'
+                  : 'bg-cyan-950/90 border-cyan-400/80 text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]'
               }`}
             >
-              {isReversedMode ? '⚡ 反転ルール:' : '通常ルール:'}
+              {isReversedMode ? '⚡ 反転ルール' : '通常ルール'}
             </span>
             <span
-              className={`text-base sm:text-lg font-black tracking-tight whitespace-nowrap ${
-                isReversedMode ? 'text-fuchsia-100' : 'text-slate-100'
+              className={`text-lg sm:text-xl font-black tracking-tight whitespace-nowrap ${
+                isReversedMode ? 'text-fuchsia-100 drop-shadow-[0_0_8px_rgba(217,70,239,0.4)]' : 'text-slate-100'
               }`}
             >
               {isReversedMode ? '色 ➔ 文字' : '文字 ➔ 色'}
@@ -81,11 +81,11 @@ export const ModeBanner: React.FC = () => {
                 }}
               >
                 <span
-                  className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_currentColor] shrink-0"
+                  className="w-4 h-4 rounded-full shadow-[0_0_8px_currentColor] shrink-0"
                   style={{ backgroundColor: wordDef.hex, color: wordDef.hex }}
                 />
                 <span
-                  className="text-base sm:text-lg font-black tracking-wide"
+                  className="text-lg sm:text-xl font-black tracking-wide"
                   style={{ color: wordDef.hex }}
                 >
                   {wordDef.label}色
@@ -95,10 +95,10 @@ export const ModeBanner: React.FC = () => {
 
             {isReversedMode && inkDef && (
               <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-fuchsia-500/80 bg-fuchsia-950/80 transition-all shadow-[0_0_12px_rgba(217,70,239,0.4)]">
-                <span className="text-base sm:text-lg font-black text-fuchsia-100">
+                <span className="text-lg sm:text-xl font-black text-fuchsia-100">
                   「{inkDef.label}」
                 </span>
-                <span className="text-xs sm:text-sm font-bold text-fuchsia-300">の文字</span>
+                <span className="text-sm sm:text-base font-bold text-fuchsia-300">の文字</span>
               </div>
             )}
           </div>
