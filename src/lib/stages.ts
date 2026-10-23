@@ -163,16 +163,109 @@ export const STAGE_5: Stage = generateStage({
   seed: 9876,
 });
 
+// ==========================================
+// Stage 6: 英語 (English Only) - 4x4 + GATE x 1
+// ==========================================
+// 解法パス: (0,0) -> (0,1) -> (1,1) -> (2,1)[GATE] -> (2,2) -> (2,3) -> (3,3)
+const stage6Cells: Cell[] = [
+  // 行 0
+  { r: 0, c: 0, word: 'BLUE', ink: 'RED', type: 'START', notation: 'english' },
+  { r: 0, c: 1, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  { r: 0, c: 2, word: 'RED', ink: 'PURPLE', type: 'NORMAL', notation: 'english' },
+  { r: 0, c: 3, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
+  // 行 1
+  { r: 1, c: 0, word: 'PURPLE', ink: 'GREEN', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 1, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 2, word: 'BLUE', ink: 'RED', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 3, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  // 行 2
+  { r: 2, c: 0, word: 'YELLOW', ink: 'RED', type: 'NORMAL', notation: 'english' },
+  { r: 2, c: 1, word: 'RED', ink: 'GREEN', type: 'GATE', notation: 'english' },
+  { r: 2, c: 2, word: 'GREEN', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  { r: 2, c: 3, word: 'BLUE', ink: 'PURPLE', type: 'NORMAL', notation: 'english' },
+  // 行 3
+  { r: 3, c: 0, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  { r: 3, c: 1, word: 'PURPLE', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
+  { r: 3, c: 2, word: 'GREEN', ink: 'RED', type: 'NORMAL', notation: 'english' },
+  { r: 3, c: 3, word: 'PURPLE', ink: 'YELLOW', type: 'GOAL', notation: 'english' },
+];
+
+export const STAGE_6: Stage = {
+  id: 6,
+  title: 'Stage 6: 英語 (English Only)',
+  size: 4,
+  isScrollable: false,
+  viewportSize: 4,
+  description: '全マスが英語アルファベット！英語の読字自動化によるストループ効果の原点を体感しよう。',
+  start: { r: 0, c: 0 },
+  goal: { r: 3, c: 3 },
+  cells: stage6Cells,
+  recommendedSteps: 6,
+};
+
+// ==========================================
+// Stage 7: 世界交差 (Global 4表記) - 5x5 + GATE x 1
+// ==========================================
+// 解法パス: (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2)[GATE] -> (2,3) -> (2,4) -> (3,4) -> (4,4)
+const stage7Cells: Cell[] = [
+  // 行 0
+  { r: 0, c: 0, word: 'GREEN', ink: 'PURPLE', type: 'START', notation: 'english' },
+  { r: 0, c: 1, word: 'YELLOW', ink: 'GREEN', type: 'NORMAL', notation: 'kanji' },
+  { r: 0, c: 2, word: 'BLUE', ink: 'YELLOW', type: 'NORMAL', notation: 'katakana' },
+  { r: 0, c: 3, word: 'PURPLE', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
+  { r: 0, c: 4, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  // 行 1
+  { r: 1, c: 0, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'katakana' },
+  { r: 1, c: 1, word: 'PURPLE', ink: 'RED', type: 'NORMAL', notation: 'kanji' },
+  { r: 1, c: 2, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'hiragana' },
+  { r: 1, c: 3, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 4, word: 'BLUE', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
+  // 行 2
+  { r: 2, c: 0, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'english' },
+  { r: 2, c: 1, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },
+  { r: 2, c: 2, word: 'PURPLE', ink: 'RED', type: 'GATE', notation: 'english' },
+  { r: 2, c: 3, word: 'RED', ink: 'YELLOW', type: 'NORMAL', notation: 'kanji' },
+  { r: 2, c: 4, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'katakana' },
+  // 行 3
+  { r: 3, c: 0, word: 'RED', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
+  { r: 3, c: 1, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  { r: 3, c: 2, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'katakana' },
+  { r: 3, c: 3, word: 'PURPLE', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
+  { r: 3, c: 4, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'english' },
+  // 行 4
+  { r: 4, c: 0, word: 'GREEN', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
+  { r: 4, c: 1, word: 'RED', ink: 'YELLOW', type: 'NORMAL', notation: 'katakana' },
+  { r: 4, c: 2, word: 'PURPLE', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
+  { r: 4, c: 3, word: 'YELLOW', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
+  { r: 4, c: 4, word: 'GREEN', ink: 'PURPLE', type: 'GOAL', notation: 'hiragana' },
+];
+
+export const STAGE_7: Stage = {
+  id: 7,
+  title: 'Stage 7: 世界交差 (Global 4表記)',
+  size: 5,
+  isScrollable: true,
+  viewportSize: 4,
+  description: 'ひらがな・カタカナ・漢字・英語が交錯する最高峰の認知迷宮！4種の文字と色が激突。',
+  start: { r: 0, c: 0 },
+  goal: { r: 4, c: 4 },
+  cells: stage7Cells,
+  recommendedSteps: 8,
+};
+
 export const PRESET_STAGES: Stage[] = [
   STAGE_1,
   STAGE_2,
   STAGE_3,
   STAGE_4,
   STAGE_5,
+  STAGE_6,
+  STAGE_7,
 ];
 
 /**
  * デイリーチャレンジパズルを生成（日付シード）
+ * 4表記（ひらがな・カタカナ・漢字・英語）混合のグローバル迷宮
  */
 export function getDailyStage(date: Date = new Date()): Stage {
   const y = date.getFullYear();
@@ -189,7 +282,7 @@ export function getDailyStage(date: Date = new Date()): Stage {
     description: `全世界共通の日替わりパズル！本日の挑戦（${y}/${m}/${d}）`,
     gateCount: 1,
     targetLength: 18,
-    notationRule: 'mixed_all',
+    notationRule: 'mixed_global',
     seed: `daily_${dateStr}`,
   });
 }
@@ -201,6 +294,7 @@ export function getRandomStage(size: number = 7): Stage {
   const seed = Math.floor(Math.random() * 1000000);
   const gateCount = size >= 10 ? 2 : size >= 5 ? 1 : 0;
   const targetLength = size === 4 ? 8 : size === 5 ? 12 : size === 7 ? 18 : 26;
+  const notationRule = size >= 7 ? 'mixed_global' : 'mixed_all';
 
   return generateStage({
     id: 1000 + (seed % 1000),
@@ -211,7 +305,7 @@ export function getRandomStage(size: number = 7): Stage {
     description: `シード #${seed} から自動生成された無限パズル。`,
     gateCount,
     targetLength,
-    notationRule: 'mixed_all',
+    notationRule,
     seed,
   });
 }
