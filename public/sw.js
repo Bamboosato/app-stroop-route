@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stroop-route-v2';
+const CACHE_NAME = 'stroop-route-v4';
 
 const STATIC_PRECACHE_URLS = [
   '/',

@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="w-full max-w-md mx-auto px-4 py-2 flex flex-col gap-2 select-none">
-      {/* 上段: タイトル ＆ ステージ一覧/設定ボタン */}
+      {/* 上段: タイトル ＆ ステージ選択・切り替え / 設定ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div>
@@ -59,14 +59,33 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={onOpenStageSelect}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 hover:text-white transition-all shadow-md active:scale-95 border border-purple-500/40 text-xs font-bold"
-            title="ステージ選択"
-          >
-            <Layers className="w-4 h-4 text-purple-400" />
-            <span>ステージ</span>
-          </button>
+          {/* ステージ名 ＆ 前後送り（統合セレクター） */}
+          <div className="flex items-center bg-purple-950/60 border border-purple-500/40 rounded-xl p-0.5 shadow-md">
+            <button
+              onClick={prevStage}
+              disabled={!canPrev}
+              className="p-1 rounded-lg text-purple-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition"
+              title="前のステージ"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onOpenStageSelect}
+              className="flex items-center gap-1 px-1.5 py-1 text-xs sm:text-sm font-black text-purple-200 hover:text-white transition whitespace-nowrap"
+              title="ステージ選択"
+            >
+              <Layers className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+              <span>{displayTitle}</span>
+            </button>
+            <button
+              onClick={nextStage}
+              disabled={!canNext}
+              className="p-1 rounded-lg text-purple-300 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition"
+              title="次のステージ"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
 
           <button
             onClick={onOpenSettings}
@@ -79,59 +98,33 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* 中段: ステージセレクター ＆ ステータス */}
-      <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-3 py-2 shadow-inner">
-        {/* ステージ送り */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={prevStage}
-            disabled={!canPrev}
-            className="p-1 rounded-lg text-slate-400 hover:text-cyan-400 disabled:opacity-30 disabled:pointer-events-none transition"
-            title="前のステージ"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={onOpenStageSelect}
-            className="text-sm font-bold text-slate-200 px-1 whitespace-nowrap hover:text-cyan-400 transition"
-          >
-            {displayTitle}
-          </button>
-          <button
-            onClick={nextStage}
-            disabled={!canNext}
-            className="p-1 rounded-lg text-slate-400 hover:text-cyan-400 disabled:opacity-30 disabled:pointer-events-none transition"
-            title="次のステージ"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
+      {/* 中段: タイマー ＆ 手数 ＆ コントロール（横幅をフル活用した大型表示） */}
+      <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-2.5 shadow-inner">
         {/* タイマー ＆ 手数 */}
-        <div className="flex items-center gap-3 text-sm font-mono font-semibold">
-          <div className="flex items-center gap-1.5 text-cyan-400">
-            <Clock className="w-4 h-4" />
-            <span>{formatTime(timerSeconds)}</span>
+        <div className="flex items-center gap-5 sm:gap-6 font-mono">
+          <div className="flex items-center gap-2 text-cyan-300 font-black" title="経過時間">
+            <Clock className="w-5 h-5 text-cyan-400 shrink-0" />
+            <span className="text-lg sm:text-xl tracking-tight tabular-nums">{formatTime(timerSeconds)}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-purple-300">
-            <Footprints className="w-4 h-4" />
-            <span>{moveCount}手</span>
+          <div className="flex items-center gap-2 text-purple-300 font-black" title="手数">
+            <Footprints className="w-5 h-5 text-purple-400 shrink-0" />
+            <span className="text-lg sm:text-xl tracking-tight tabular-nums">{moveCount}手</span>
           </div>
         </div>
 
         {/* コントロール: Undo & Reset */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={undo}
             disabled={!canUndo}
-            className="p-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 disabled:opacity-30 disabled:pointer-events-none transition active:scale-90 border border-slate-700/60"
+            className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 disabled:opacity-30 disabled:pointer-events-none transition active:scale-90 border border-slate-700/60 shadow-sm"
             title="1手戻す (Z)"
           >
             <Undo2 className="w-4 h-4" />
           </button>
           <button
             onClick={reset}
-            className="p-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-rose-400 transition active:scale-90 border border-slate-700/60"
+            className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-rose-400 transition active:scale-90 border border-slate-700/60 shadow-sm"
             title="リセット (R)"
           >
             <RotateCcw className="w-4 h-4" />
