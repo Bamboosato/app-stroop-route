@@ -76,6 +76,9 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
     isCleared: false,
     isClearModalOpen: false,
     isDeadEnd: false,
+    lives: 3,
+    maxLives: 3,
+    isGameOver: false,
     camR: 0,
     camC: 0,
     moveCount: 0,
@@ -102,6 +105,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isCleared: false,
         isClearModalOpen: false,
         isDeadEnd: false,
+        lives: 3,
+        isGameOver: false,
         camR: 0,
         camC: 0,
         moveCount: 0,
@@ -129,6 +134,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isCleared: false,
         isClearModalOpen: false,
         isDeadEnd: false,
+        lives: 3,
+        isGameOver: false,
         camR: 0,
         camC: 0,
         moveCount: 0,
@@ -138,7 +145,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
     stepTo: (targetCell: Cell) => {
       const state = get();
-      if (state.isCleared) return;
+      if (state.isCleared || state.isGameOver) return;
 
       const currentPath = state.path;
       const tipCell = currentPath[currentPath.length - 1];
@@ -153,7 +160,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
           // 現在の先端マス（今いるマス）をクリックした場合は何もしない
           return;
         }
-        // 過去の通過マスをクリックした場合はその地点まで一括巻き戻し
+        // 過去の通過マスをクリックした場合はその地点まで一括巻き戻し（ミスとはみなさない）
         get().rewindTo(visitedIndex);
         return;
       }
@@ -168,6 +175,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
       if (!result.isValid) {
         soundService.playError();
+        const nextLives = Math.max(0, state.lives - 1);
+        if (nextLives <= 0) {
+          soundService.playDeadEnd();
+          set({ lives: 0, isGameOver: true, isDeadEnd: false });
+        } else {
+          set({ lives: nextLives });
+        }
         return;
       }
 
@@ -310,6 +324,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isCleared: false,
         isClearModalOpen: false,
         isDeadEnd: false,
+        lives: 3,
+        isGameOver: false,
         moveCount: 0,
         camR: 0,
         camC: 0,
@@ -335,7 +351,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
 
     tickTimer: () => {
       const state = get();
-      if (!state.isCleared) {
+      if (!state.isCleared && !state.isGameOver) {
         set({ timerSeconds: state.timerSeconds + 1 });
       }
     },

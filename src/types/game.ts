@@ -53,6 +53,9 @@ export interface GameState {
   isCleared: boolean;
   isClearModalOpen: boolean; // クリアリザルトモーダルの表示フラグ
   isDeadEnd: boolean;        // 手詰まり状態フラグ
+  lives: number;             // 残りライフ (デフォルト 3)
+  maxLives: number;          // 最大ライフ (3)
+  isGameOver: boolean;       // ゲームオーバーフラグ
   camR: number;              // 現在のカメラ行オフセット (0, 3, 6)
   camC: number;              // 現在のカメラ列オフセット (0, 3, 6)
   moveCount: number;

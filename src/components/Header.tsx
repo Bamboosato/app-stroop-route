@@ -3,7 +3,7 @@
 import React from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { PRESET_STAGES } from '@/lib/stages';
-import { RotateCcw, Undo2, Settings, ChevronLeft, ChevronRight, Clock, Footprints, Layers } from 'lucide-react';
+import { RotateCcw, Undo2, Settings, ChevronLeft, ChevronRight, Clock, Footprints, Layers, Heart } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSettings: () => void;
@@ -21,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
     moveCount,
     path,
     isCleared,
+    lives,
     undo,
     reset,
     nextStage,
@@ -47,14 +48,35 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="w-full max-w-md mx-auto px-4 py-2 flex flex-col gap-2 select-none">
-      {/* 上段: タイトル ＆ ステージ選択・切り替え / 設定ボタン */}
+      {/* 上段: タイトル ＆ ライフ（案A） ＆ ステージ選択・切り替え / 設定ボタン */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <div>
             <h1 className="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
               Stroop Route
             </h1>
             <p className="text-[10px] text-slate-400 font-medium">意色交差パズル</p>
+          </div>
+
+          {/* ライフ表示（案A: ❤️×3 ネオンピルバッジ） */}
+          <div
+            className={`flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl border transition-all duration-300 shadow-md ${
+              lives <= 1
+                ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.6)] animate-pulse'
+                : 'bg-rose-950/40 border-rose-500/50 text-rose-200 shadow-[0_0_8px_rgba(244,63,94,0.25)]'
+            }`}
+            title={`残りライフ: ${lives}`}
+          >
+            <Heart
+              className={`w-3.5 h-3.5 shrink-0 ${
+                lives <= 1
+                  ? 'text-rose-400 fill-rose-400'
+                  : 'text-rose-400 fill-rose-500/80'
+              }`}
+            />
+            <span className="text-xs sm:text-sm font-black font-mono tracking-tight leading-none">
+              ×{lives}
+            </span>
           </div>
         </div>
 

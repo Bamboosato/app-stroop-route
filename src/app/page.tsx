@@ -8,6 +8,7 @@ import { GameBoard } from '@/components/GameBoard';
 import { MiniDotHud } from '@/components/MiniDotHud';
 import { DeadEndToast } from '@/components/DeadEndToast';
 import { ClearModal } from '@/components/ClearModal';
+import { GameOverModal } from '@/components/GameOverModal';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StageSelectModal } from '@/components/StageSelectModal';
 import { HowToModal } from '@/components/HowToModal';
@@ -19,7 +20,7 @@ export default function Home() {
   const [isStageSelectOpen, setIsStageSelectOpen] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
 
-  const { tickTimer, isCleared, isClearModalOpen, openClearModal, initStage } = useGameStore();
+  const { tickTimer, isCleared, isGameOver, isClearModalOpen, openClearModal, initStage } = useGameStore();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -34,12 +35,12 @@ export default function Home() {
 
   // タイマーインターバル
   useEffect(() => {
-    if (isCleared) return;
+    if (isCleared || isGameOver) return;
     const interval = setInterval(() => {
       tickTimer();
     }, 1000);
     return () => clearInterval(interval);
-  }, [isCleared, tickTimer]);
+  }, [isCleared, isGameOver, tickTimer]);
 
   return (
     <main className="w-full min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-2 px-2 sm:px-4 max-w-lg mx-auto">
@@ -89,6 +90,7 @@ export default function Home() {
       {/* モーダル・トースト群 */}
       <DeadEndToast />
       <ClearModal />
+      <GameOverModal onOpenStageSelect={() => setIsStageSelectOpen(true)} />
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
