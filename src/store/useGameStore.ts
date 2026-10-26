@@ -13,6 +13,7 @@ interface GameActions {
   initStage: (stageIndex: number) => void;
   loadCustomStage: (stage: Stage) => void;
   stepTo: (cell: Cell) => void;
+  rewindTo: (index: number) => void;
   undo: () => void;
   reset: () => void;
   nextStage: () => void;
@@ -142,13 +143,19 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       const currentPath = state.path;
       const tipCell = currentPath[currentPath.length - 1];
 
-      // すでに訪問済みの直前セルをクリックした場合はUndoとして処理
-      if (currentPath.length > 1) {
-        const prevOfTip = currentPath[currentPath.length - 2];
-        if (prevOfTip.r === targetCell.r && prevOfTip.c === targetCell.c) {
-          get().undo();
+      // すでに訪問済みのパス内マスをクリックした場合はその位置まで巻き戻し
+      const visitedIndex = currentPath.findIndex(
+        (c) => c.r === targetCell.r && c.c === targetCell.c
+      );
+
+      if (visitedIndex !== -1) {
+        if (visitedIndex === currentPath.length - 1) {
+          // 現在の先端マス（今いるマス）をクリックした場合は何もしない
           return;
         }
+        // 過去の通過マスをクリックした場合はその地点まで一括巻き戻し
+        get().rewindTo(visitedIndex);
+        return;
       }
 
       // 移動可否判定
@@ -230,11 +237,17 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       });
     },
 
-    undo: () => {
+    rewindTo: (targetIndex: number) => {
       const state = get();
-      if (state.path.length <= 1 || state.isCleared) return;
+      if (
+        state.isCleared ||
+        targetIndex < 0 ||
+        targetIndex >= state.path.length - 1
+      ) {
+        return;
+      }
 
-      const newPath = state.path.slice(0, -1);
+      const newPath = state.path.slice(0, targetIndex + 1);
       const newReversed = evaluateCurrentMode(newPath);
       const tipCell = newPath[newPath.length - 1];
       const isDead = checkDeadEnd(
@@ -250,16 +263,19 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       let nextCamC = state.camC;
       if (state.currentStage.isScrollable && tipCell) {
         const maxOffset = getMaxCamOffset(state.currentStage.size);
-        const shiftAmount = state.currentStage.size === 5 ? 1 : 3;
-        if (tipCell.r < state.camR) {
-          nextCamR = Math.max(0, state.camR - shiftAmount);
-        } else if (tipCell.r >= state.camR + 4) {
-          nextCamR = Math.min(maxOffset, state.camR + shiftAmount);
+        if (tipCell.r < nextCamR) {
+          nextCamR = Math.max(0, tipCell.r);
+        } else if (tipCell.r >= nextCamR + 4) {
+          nextCamR = Math.min(maxOffset, Math.max(0, tipCell.r - 3));
         }
-        if (tipCell.c < state.camC) {
-          nextCamC = Math.max(0, state.camC - shiftAmount);
-        } else if (tipCell.c >= state.camC + 4) {
-          nextCamC = Math.min(maxOffset, state.camC + shiftAmount);
+        if (tipCell.c < nextCamC) {
+          nextCamC = Math.max(0, tipCell.c);
+        } else if (tipCell.c >= nextCamC + 4) {
+          nextCamC = Math.min(maxOffset, Math.max(0, tipCell.c - 3));
+        }
+
+        if (nextCamR !== state.camR || nextCamC !== state.camC) {
+          soundService.playSlide();
         }
       }
 
@@ -270,6 +286,12 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         camR: nextCamR,
         camC: nextCamC,
       });
+    },
+
+    undo: () => {
+      const state = get();
+      if (state.path.length <= 1 || state.isCleared) return;
+      get().rewindTo(state.path.length - 2);
     },
 
     reset: () => {
