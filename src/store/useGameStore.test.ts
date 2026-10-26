@@ -82,4 +82,38 @@ describe('useGameStore rewindTo and stepTo past cell', () => {
     expect(state.camR).toBe(0);
     expect(state.camC).toBe(0);
   });
+
+  it('handles lives deduction and game over on 3 mistakes', () => {
+    const stage = PRESET_STAGES[1]; // Stage 2
+    expect(useGameStore.getState().lives).toBe(3);
+    expect(useGameStore.getState().isGameOver).toBe(false);
+
+    // 不正なセル (0,3) をタップ (隣接していない/ルール不一致)
+    const invalidCell = getCellAt(stage.cells, 0, 3)!;
+
+    // 1回目のミス
+    useGameStore.getState().stepTo(invalidCell);
+    expect(useGameStore.getState().lives).toBe(2);
+    expect(useGameStore.getState().isGameOver).toBe(false);
+
+    // 2回目のミス
+    useGameStore.getState().stepTo(invalidCell);
+    expect(useGameStore.getState().lives).toBe(1);
+    expect(useGameStore.getState().isGameOver).toBe(false);
+
+    // 3回目のミス -> ゲームオーバー
+    useGameStore.getState().stepTo(invalidCell);
+    expect(useGameStore.getState().lives).toBe(0);
+    expect(useGameStore.getState().isGameOver).toBe(true);
+
+    // ゲームオーバー後は移動が無効
+    const validCell = getCellAt(stage.cells, 1, 0)!;
+    useGameStore.getState().stepTo(validCell);
+    expect(useGameStore.getState().path.length).toBe(1); // スタートのみ
+
+    // reset() でライフが3に復帰
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().lives).toBe(3);
+    expect(useGameStore.getState().isGameOver).toBe(false);
+  });
 });

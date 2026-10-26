@@ -115,9 +115,92 @@ function pickDifferentColor(exclude: ColorId, rng: () => number): ColorId {
 }
 
 /**
- * 解法保証型のパズルステージを自動生成
+ * ステージが完全な一本道（正解パス上の全ステップで進めるマスが常に唯一）かを判定
  */
-export function generateStage(opts: GenerateOptions): Stage {
+function isStageUniquePath(stage: Stage): boolean {
+  const startCell = stage.cells.find(
+    (c) => c.r === stage.start.r && c.c === stage.start.c
+  );
+  if (!startCell) return false;
+
+  let solutionPath: Cell[] | null = null;
+  const visited = new Set<string>();
+
+  function dfs(cur: Cell[]) {
+    if (solutionPath) return;
+    const tip = cur[cur.length - 1];
+    if (tip.r === stage.goal.r && tip.c === stage.goal.c) {
+      solutionPath = [...cur];
+      return;
+    }
+
+    const gateCount = cur.filter((c) => c.type === 'GATE').length;
+    const isRev = gateCount % 2 === 1;
+
+    for (const dir of DIRECTIONS) {
+      const nr = tip.r + dir.r;
+      const nc = tip.c + dir.c;
+      const key = `${nr},${nc}`;
+      if (visited.has(key)) continue;
+
+      const nextCell = stage.cells.find((c) => c.r === nr && c.c === nc);
+      if (!nextCell) continue;
+
+      const matches = !isRev
+        ? nextCell.ink === tip.word
+        : nextCell.word === tip.ink;
+
+      if (matches) {
+        visited.add(key);
+        dfs([...cur, nextCell]);
+        visited.delete(key);
+      }
+    }
+  }
+
+  visited.add(`${startCell.r},${startCell.c}`);
+  dfs([startCell]);
+
+  if (!solutionPath) return false;
+  const path: Cell[] = solutionPath;
+
+  // 正解パス上の各ステップで、合法な移動先が厳密に1つだけかを確認
+  for (let i = 0; i < path.length - 1; i++) {
+    const sub = path.slice(0, i + 1);
+    const gateCount = sub.filter((c) => c.type === 'GATE').length;
+    const isRev = gateCount % 2 === 1;
+    const tip = path[i];
+
+    let validCount = 0;
+    for (const dir of DIRECTIONS) {
+      const nr = tip.r + dir.r;
+      const nc = tip.c + dir.c;
+      if (sub.some((c) => c.r === nr && c.c === nc)) continue;
+
+      const nextCell = stage.cells.find((c) => c.r === nr && c.c === nc);
+      if (!nextCell) continue;
+
+      const matches = !isRev
+        ? nextCell.ink === tip.word
+        : nextCell.word === tip.ink;
+
+      if (matches) {
+        validCount++;
+      }
+    }
+
+    if (validCount !== 1) {
+      return false; // 分岐あり
+    }
+  }
+
+  return true;
+}
+
+/**
+ * 内部ステージ生成関数
+ */
+function generateStageInternal(opts: GenerateOptions): Stage {
   const numericSeed =
     typeof opts.seed === 'string' ? hashStringToSeed(opts.seed) : opts.seed;
   const rng = createPRNG(numericSeed);
@@ -152,8 +235,9 @@ export function generateStage(opts: GenerateOptions): Stage {
     gateIndices.add(second);
   }
 
-  // 3. ストループ制約の逆算
+  // 3. ストループ制約の逆算（一意解パスの保証）
   const cellMap = new Map<string, Cell>();
+  const stepModes: boolean[] = []; // 各ステップ時点での反転モード状態
   let currentReversed = false;
 
   for (let i = 0; i < path.length; i++) {
@@ -177,11 +261,43 @@ export function generateStage(opts: GenerateOptions): Stage {
       if (!currentReversed) {
         // 通常モード: 目標インク = 直前単語
         ink = prev.word;
-        word = pickDifferentColor(ink, rng);
+        // 単語は ink と異なり、かつ隣接する過去セルからの誤ショートカットを避ける色を選ぶ
+        const excludedWords = new Set<ColorId>([ink]);
+        for (let j = 0; j < i - 1; j++) {
+          const past = path[j];
+          if (Math.abs(past.r - r) + Math.abs(past.c - c) === 1) {
+            if (stepModes[j]) {
+              // 過去セルから次へ進むルールが反転モードなら target.word === past.ink が移動条件となるので除外
+              const pastCell = cellMap.get(`${past.r},${past.c}`)!;
+              excludedWords.add(pastCell.ink);
+            }
+          }
+        }
+        const wordCandidates = COLOR_IDS.filter((c) => !excludedWords.has(c));
+        word =
+          wordCandidates.length > 0
+            ? wordCandidates[Math.floor(rng() * wordCandidates.length)]
+            : pickDifferentColor(ink, rng);
       } else {
         // 反転モード: 目標単語 = 直前インク
         word = prev.ink;
-        ink = pickDifferentColor(word, rng);
+        // インクは word と異なり、かつ隣接する過去セルからの誤ショートカットを避ける色を選ぶ
+        const excludedInks = new Set<ColorId>([word]);
+        for (let j = 0; j < i - 1; j++) {
+          const past = path[j];
+          if (Math.abs(past.r - r) + Math.abs(past.c - c) === 1) {
+            if (!stepModes[j]) {
+              // 過去セルから次へ進むルールが通常モードなら target.ink === past.word が移動条件となるので除外
+              const pastCell = cellMap.get(`${past.r},${past.c}`)!;
+              excludedInks.add(pastCell.word);
+            }
+          }
+        }
+        const inkCandidates = COLOR_IDS.filter((c) => !excludedInks.has(c));
+        ink =
+          inkCandidates.length > 0
+            ? inkCandidates[Math.floor(rng() * inkCandidates.length)]
+            : pickDifferentColor(word, rng);
       }
     }
 
@@ -197,9 +313,11 @@ export function generateStage(opts: GenerateOptions): Stage {
     if (isGate) {
       currentReversed = !currentReversed;
     }
+    // このマスに進入した後の反転モード状態（このマスから次へ進む際のルール）
+    stepModes.push(currentReversed);
   }
 
-  // 4. 妨害セル（Distractor）の充填
+  // 4. 妨害セル（Distractor）の充填（偽の分岐を完全排除し一本道化）
   const allCells: Cell[] = [];
   for (let r = 0; r < opts.size; r++) {
     for (let c = 0; c < opts.size; c++) {
@@ -207,16 +325,108 @@ export function generateStage(opts: GenerateOptions): Stage {
       if (cellMap.has(key)) {
         allCells.push(cellMap.get(key)!);
       } else {
-        const randWord = COLOR_IDS[Math.floor(rng() * COLOR_IDS.length)];
-        const randInk = pickDifferentColor(randWord, rng);
+        // この妨害セルに隣接する正解パスマスのうち、次に進む分岐として誤一致しないよう禁止色を収集
+        const forbiddenInks = new Set<ColorId>();
+        const forbiddenWords = new Set<ColorId>();
+
+        for (let i = 0; i < path.length - 1; i++) {
+          const p = path[i];
+          if (Math.abs(p.r - r) + Math.abs(p.c - c) === 1) {
+            const pCell = cellMap.get(`${p.r},${p.c}`)!;
+            const isReversedAtStep = stepModes[i];
+            if (!isReversedAtStep) {
+              // 通常モードでは target.ink === pCell.word で遷移できてしまうため禁止
+              forbiddenInks.add(pCell.word);
+            } else {
+              // 反転モードでは target.word === pCell.ink で遷移できてしまうため禁止
+              forbiddenWords.add(pCell.ink);
+            }
+          }
+        }
+
+        // 禁止色および ink !== word を両立できる (ink, word) ペアを全探索して選択
+        const validPairs: { ink: ColorId; word: ColorId }[] = [];
+        for (const ink of COLOR_IDS) {
+          if (forbiddenInks.has(ink)) continue;
+          for (const word of COLOR_IDS) {
+            if (word === ink || forbiddenWords.has(word)) continue;
+            validPairs.push({ ink, word });
+          }
+        }
+
+        let chosenInk: ColorId;
+        let chosenWord: ColorId;
+
+        if (validPairs.length > 0) {
+          const pair = validPairs[Math.floor(rng() * validPairs.length)];
+          chosenInk = pair.ink;
+          chosenWord = pair.word;
+        } else {
+          // 万が一両立ペアがない場合は、衝突ペナルティが最小のペアを選択
+          let bestPair = { ink: COLOR_IDS[0], word: COLOR_IDS[1], score: 999 };
+          for (const ink of COLOR_IDS) {
+            for (const word of COLOR_IDS) {
+              if (ink === word) continue;
+              const inkPenalty = forbiddenInks.has(ink) ? 1 : 0;
+              const wordPenalty = forbiddenWords.has(word) ? 1 : 0;
+              const score = inkPenalty + wordPenalty;
+              if (score < bestPair.score) {
+                bestPair = { ink, word, score };
+              }
+            }
+          }
+          chosenInk = bestPair.ink;
+          chosenWord = bestPair.word;
+        }
+
         allCells.push({
           r,
           c,
-          word: randWord,
-          ink: randInk,
+          word: chosenWord,
+          ink: chosenInk,
           type: 'NORMAL',
           notation: pickNotation(opts.notationRule, rng),
         });
+      }
+    }
+  }
+
+  // 5. 分岐ゼロ化の完全保証（正解パス上の各ステップで進めるマスが常に正解の1マスだけになるよう補正）
+  for (let i = 0; i < path.length - 1; i++) {
+    const cur = path[i];
+    const next = path[i + 1];
+    const isRev = stepModes[i];
+    const curCell = allCells.find((c) => c.r === cur.r && c.c === cur.c)!;
+
+    for (const dir of DIRECTIONS) {
+      const nr = cur.r + dir.r;
+      const nc = cur.c + dir.c;
+      if (nr === next.r && nc === next.c) continue; // 正解の次はスキップ
+
+      const adjCell = allCells.find((c) => c.r === nr && c.c === nc);
+      if (!adjCell) continue;
+
+      // ダミーセルのみを対象に、curCell から誤移動できないよう不一致色に補正
+      if (!cellMap.has(`${nr},${nc}`)) {
+        const matches = !isRev
+          ? adjCell.ink === curCell.word
+          : adjCell.word === curCell.ink;
+
+        if (matches) {
+          if (!isRev) {
+            // 通常モードでは adjCell.ink が curCell.word と一致しているため不一致色に変更
+            adjCell.ink = pickDifferentColor(curCell.word, rng);
+            if (adjCell.word === adjCell.ink) {
+              adjCell.word = pickDifferentColor(adjCell.ink, rng);
+            }
+          } else {
+            // 反転モードでは adjCell.word が curCell.ink と一致しているため不一致色に変更
+            adjCell.word = pickDifferentColor(curCell.ink, rng);
+            if (adjCell.ink === adjCell.word) {
+              adjCell.ink = pickDifferentColor(adjCell.word, rng);
+            }
+          }
+        }
       }
     }
   }
@@ -233,4 +443,23 @@ export function generateStage(opts: GenerateOptions): Stage {
     cells: allCells,
     recommendedSteps: path.length - 1,
   };
+}
+
+/**
+ * 解法保証＆完全一本道（分岐ゼロ・山勘ゼロ）のパズルステージを自動生成
+ */
+export function generateStage(opts: GenerateOptions): Stage {
+  const baseSeed =
+    typeof opts.seed === 'string' ? hashStringToSeed(opts.seed) : opts.seed;
+
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const currentSeed = baseSeed + attempt * 7919;
+    const stage = generateStageInternal({ ...opts, seed: currentSeed });
+    if (isStageUniquePath(stage)) {
+      return stage;
+    }
+  }
+
+  // 万一フォールバック
+  return generateStageInternal(opts);
 }
