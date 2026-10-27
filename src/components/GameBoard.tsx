@@ -6,6 +6,7 @@ import { CellItem } from './CellItem';
 import { ConnectionLines } from './ConnectionLines';
 import { getValidNextMoves } from '@/lib/gameLogic';
 import { Cell } from '@/types/game';
+import { AlertCircle } from 'lucide-react';
 
 export const GameBoard: React.FC = () => {
   const {
@@ -16,13 +17,39 @@ export const GameBoard: React.FC = () => {
     camR,
     camC,
     settings,
+    lives,
+    lastMistakeCell,
+    mistakeTrigger,
     stepTo,
     shiftCamera,
   } = useGameStore();
 
   const boardWrapperRef = useRef<HTMLDivElement>(null);
   const [isDrawingPath, setIsDrawingPath] = useState(false);
+  const [activeMistake, setActiveMistake] = useState<{ r: number; c: number } | null>(null);
+  const [showMistakeToast, setShowMistakeToast] = useState(false);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  // ミス発生時のアニメーショントリガー
+  useEffect(() => {
+    if (mistakeTrigger > 0 && lastMistakeCell) {
+      setActiveMistake({ r: lastMistakeCell.r, c: lastMistakeCell.c });
+      setShowMistakeToast(true);
+
+      const cellTimer = setTimeout(() => {
+        setActiveMistake(null);
+      }, 700);
+
+      const toastTimer = setTimeout(() => {
+        setShowMistakeToast(false);
+      }, 850);
+
+      return () => {
+        clearTimeout(cellTimer);
+        clearTimeout(toastTimer);
+      };
+    }
+  }, [mistakeTrigger, lastMistakeCell]);
 
   const tipCell = path[path.length - 1];
   const isScrollable = !!currentStage.isScrollable;
@@ -150,8 +177,12 @@ export const GameBoard: React.FC = () => {
         ref={boardWrapperRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        className={`relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-950/90 backdrop-blur-md border-[4px] border-purple-500/80 shadow-[0_0_24px_rgba(168,85,247,0.35)] transition-transform ${
-          isDeadEnd ? 'animate-shake' : ''
+        className={`relative w-full aspect-square rounded-3xl overflow-hidden bg-slate-950/90 backdrop-blur-md border-[4px] transition-all duration-200 ${
+          showMistakeToast
+            ? 'border-rose-500 shadow-[0_0_28px_rgba(244,63,94,0.6)] animate-shake'
+            : isDeadEnd
+            ? 'border-purple-500/80 shadow-[0_0_24px_rgba(168,85,247,0.35)] animate-shake'
+            : 'border-purple-500/80 shadow-[0_0_24px_rgba(168,85,247,0.35)]'
         }`}
         style={
           {
@@ -163,6 +194,14 @@ export const GameBoard: React.FC = () => {
           } as React.CSSProperties
         }
       >
+        {/* 盤面上部: MISS! 残りライフ瞬間トースト */}
+        {showMistakeToast && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-rose-950/95 border border-rose-500 text-rose-200 text-xs font-black shadow-[0_0_20px_rgba(244,63,94,0.7)] backdrop-blur-md animate-fade-in flex items-center gap-1.5 pointer-events-none whitespace-nowrap">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 animate-pulse" />
+            <span>MISS! 残りライフ {lives}</span>
+          </div>
+        )}
+
         {/* スライディング迷宮フレーム (.labyrinth-frame) */}
         <div
           className="relative transition-transform duration-300 ease-out"
@@ -197,6 +236,8 @@ export const GameBoard: React.FC = () => {
           >
             {currentStage.cells.map((cell) => {
               const isTip = tipCell?.r === cell.r && tipCell?.c === cell.c;
+              const isMistake =
+                activeMistake?.r === cell.r && activeMistake?.c === cell.c;
               return (
                 <CellItem
                   key={`${cell.r}-${cell.c}`}
@@ -204,6 +245,7 @@ export const GameBoard: React.FC = () => {
                   isTip={isTip}
                   isVisited={isVisited(cell)}
                   isNextCandidate={isCandidate(cell)}
+                  isMistake={isMistake}
                   isCudMode={settings.isCudMode}
                   onSelect={(selectedCell) => stepTo(selectedCell)}
                   gridSize={currentStage.size}

@@ -10,6 +10,7 @@ interface CellItemProps {
   isTip: boolean;
   isVisited: boolean;
   isNextCandidate: boolean;
+  isMistake?: boolean;
   isCudMode: boolean;
   onSelect: (cell: Cell) => void;
   gridSize?: number;
@@ -20,18 +21,22 @@ export const CellItem: React.FC<CellItemProps> = ({
   isTip,
   isVisited,
   isNextCandidate,
+  isMistake = false,
   isCudMode,
   onSelect,
 }) => {
   const inkDef = COLOR_DEFS[cell.ink];
   const wordDisplay = getWordDisplay(cell.word, cell.notation);
 
-  // パネル内の文字サイズおよびバッジサイズはステージ・文字数にかかわらず完全に統一
+  // パネル内の文字サイズ判定（漢字1文字は視認性を高めるため大型化）
+  const isKanji = cell.notation === 'kanji' || wordDisplay.length === 1;
   const isLongWord = wordDisplay.length >= 6;
-  const dynamicFontSize = isLongWord
+  const dynamicFontSize = isKanji
+    ? 'text-2xl sm:text-3xl md:text-4xl leading-tight'
+    : isLongWord
     ? 'text-xs sm:text-sm md:text-base leading-tight'
     : 'text-base sm:text-lg md:text-xl leading-tight';
-  const trackingClass = 'tracking-tighter';
+  const trackingClass = isKanji ? 'tracking-normal' : 'tracking-tighter';
   const labelSizeClass = 'text-[10px]';
 
   // セルの背景スタイル
@@ -47,8 +52,11 @@ export const CellItem: React.FC<CellItemProps> = ({
     borderStyle = 'border-2 border-amber-400/80 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
   }
 
-  // 訪問済み状態とTip状態のスタイリング
-  if (isTip) {
+  // 訪問済み状態とTip状態、およびミス状態のスタイリング
+  if (isMistake) {
+    bgStyle = 'bg-rose-950/90';
+    borderStyle = 'border-2 border-rose-500 shadow-[0_0_18px_rgba(244,63,94,0.9)] animate-shake z-30 scale-[1.02]';
+  } else if (isTip) {
     borderStyle = 'border-2 border-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.7)] scale-[1.03] z-20';
   } else if (isVisited) {
     bgStyle = 'bg-slate-800/50';
