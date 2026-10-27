@@ -79,6 +79,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
     lives: 3,
     maxLives: 3,
     isGameOver: false,
+    lastMistakeCell: null,
+    mistakeTrigger: 0,
     camR: 0,
     camC: 0,
     moveCount: 0,
@@ -107,6 +109,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isDeadEnd: false,
         lives: 3,
         isGameOver: false,
+        lastMistakeCell: null,
+        mistakeTrigger: 0,
         camR: 0,
         camC: 0,
         moveCount: 0,
@@ -136,6 +140,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isDeadEnd: false,
         lives: 3,
         isGameOver: false,
+        lastMistakeCell: null,
+        mistakeTrigger: 0,
         camR: 0,
         camC: 0,
         moveCount: 0,
@@ -176,11 +182,27 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
       if (!result.isValid) {
         soundService.playError();
         const nextLives = Math.max(0, state.lives - 1);
+        const mistakeData = {
+          r: targetCell.r,
+          c: targetCell.c,
+          timestamp: Date.now(),
+        };
+
         if (nextLives <= 0) {
           soundService.playDeadEnd();
-          set({ lives: 0, isGameOver: true, isDeadEnd: false });
+          set({
+            lives: 0,
+            isGameOver: true,
+            isDeadEnd: false,
+            lastMistakeCell: mistakeData,
+            mistakeTrigger: Date.now(),
+          });
         } else {
-          set({ lives: nextLives });
+          set({
+            lives: nextLives,
+            lastMistakeCell: mistakeData,
+            mistakeTrigger: Date.now(),
+          });
         }
         return;
       }
@@ -326,6 +348,8 @@ export const useGameStore = create<GameState & GameActions>((set, get) => {
         isDeadEnd: false,
         lives: 3,
         isGameOver: false,
+        lastMistakeCell: null,
+        mistakeTrigger: 0,
         moveCount: 0,
         camR: 0,
         camC: 0,

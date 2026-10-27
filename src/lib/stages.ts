@@ -12,12 +12,12 @@ const stage1Cells: Cell[] = [
   { r: 0, c: 2, word: 'YELLOW', ink: 'PURPLE', type: 'NORMAL', notation: 'hiragana' },
   { r: 0, c: 3, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'hiragana' },
   // 行 1
-  { r: 1, c: 0, word: 'PURPLE', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },
+  { r: 1, c: 0, word: 'PURPLE', ink: 'BLUE', type: 'NORMAL', notation: 'hiragana' },
   { r: 1, c: 1, word: 'YELLOW', ink: 'GREEN', type: 'NORMAL', notation: 'hiragana' },
   { r: 1, c: 2, word: 'BLUE', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },
   { r: 1, c: 3, word: 'RED', ink: 'PURPLE', type: 'NORMAL', notation: 'hiragana' },
   // 行 2
-  { r: 2, c: 0, word: 'GREEN', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
+  { r: 2, c: 0, word: 'GREEN', ink: 'BLUE', type: 'NORMAL', notation: 'hiragana' },
   { r: 2, c: 1, word: 'RED', ink: 'PURPLE', type: 'NORMAL', notation: 'hiragana' },
   { r: 2, c: 2, word: 'PURPLE', ink: 'BLUE', type: 'NORMAL', notation: 'hiragana' },
   { r: 2, c: 3, word: 'YELLOW', ink: 'GREEN', type: 'NORMAL', notation: 'hiragana' },
@@ -63,7 +63,7 @@ const stage2Cells: Cell[] = [
   { r: 2, c: 3, word: 'BLUE', ink: 'PURPLE', type: 'NORMAL', notation: 'katakana' },
   // 行 3
   { r: 3, c: 0, word: 'YELLOW', ink: 'RED', type: 'NORMAL', notation: 'katakana' },
-  { r: 3, c: 1, word: 'PURPLE', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },
+  { r: 3, c: 1, word: 'BLUE', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },
   { r: 3, c: 2, word: 'GREEN', ink: 'BLUE', type: 'NORMAL', notation: 'katakana' },
   { r: 3, c: 3, word: 'PURPLE', ink: 'RED', type: 'GOAL', notation: 'hiragana' },
 ];
@@ -90,7 +90,7 @@ const stage3Cells: Cell[] = [
   { r: 0, c: 0, word: 'RED', ink: 'BLUE', type: 'START', notation: 'kanji' },
   { r: 0, c: 1, word: 'GREEN', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
   { r: 0, c: 2, word: 'YELLOW', ink: 'GREEN', type: 'NORMAL', notation: 'katakana' },
-  { r: 0, c: 3, word: 'PURPLE', ink: 'YELLOW', type: 'NORMAL', notation: 'kanji' },
+  { r: 0, c: 3, word: 'PURPLE', ink: 'BLUE', type: 'NORMAL', notation: 'kanji' },
   { r: 0, c: 4, word: 'BLUE', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
   // 行 1
   { r: 1, c: 0, word: 'YELLOW', ink: 'PURPLE', type: 'NORMAL', notation: 'katakana' },
@@ -99,7 +99,7 @@ const stage3Cells: Cell[] = [
   { r: 1, c: 3, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'katakana' },
   { r: 1, c: 4, word: 'GREEN', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
   // 行 2
-  { r: 2, c: 0, word: 'RED', ink: 'GREEN', type: 'NORMAL', notation: 'hiragana' },
+  { r: 2, c: 0, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'hiragana' },
   { r: 2, c: 1, word: 'PURPLE', ink: 'RED', type: 'NORMAL', notation: 'kanji' },
   { r: 2, c: 2, word: 'BLUE', ink: 'PURPLE', type: 'GATE', notation: 'katakana' },
   { r: 2, c: 3, word: 'GREEN', ink: 'RED', type: 'NORMAL', notation: 'hiragana' },
@@ -174,9 +174,9 @@ const stage6Cells: Cell[] = [
   { r: 0, c: 2, word: 'RED', ink: 'PURPLE', type: 'NORMAL', notation: 'english' },
   { r: 0, c: 3, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
   // 行 1
-  { r: 1, c: 0, word: 'PURPLE', ink: 'GREEN', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 0, word: 'PURPLE', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
   { r: 1, c: 1, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
-  { r: 1, c: 2, word: 'BLUE', ink: 'RED', type: 'NORMAL', notation: 'english' },
+  { r: 1, c: 2, word: 'YELLOW', ink: 'RED', type: 'NORMAL', notation: 'english' },
   { r: 1, c: 3, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
   // 行 2
   { r: 2, c: 0, word: 'YELLOW', ink: 'RED', type: 'NORMAL', notation: 'english' },
@@ -216,10 +216,10 @@ const stage7Cells: Cell[] = [
   { r: 0, c: 4, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'english' },
   // 行 1
   { r: 1, c: 0, word: 'YELLOW', ink: 'BLUE', type: 'NORMAL', notation: 'katakana' },
-  { r: 1, c: 1, word: 'PURPLE', ink: 'RED', type: 'NORMAL', notation: 'kanji' },
+  { r: 1, c: 1, word: 'PURPLE', ink: 'BLUE', type: 'NORMAL', notation: 'kanji' },
   { r: 1, c: 2, word: 'RED', ink: 'BLUE', type: 'NORMAL', notation: 'hiragana' },
   { r: 1, c: 3, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'english' },
-  { r: 1, c: 4, word: 'BLUE', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
+  { r: 1, c: 4, word: 'GREEN', ink: 'PURPLE', type: 'NORMAL', notation: 'kanji' },
   // 行 2
   { r: 2, c: 0, word: 'BLUE', ink: 'GREEN', type: 'NORMAL', notation: 'english' },
   { r: 2, c: 1, word: 'GREEN', ink: 'YELLOW', type: 'NORMAL', notation: 'hiragana' },

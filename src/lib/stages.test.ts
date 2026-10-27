@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PRESET_STAGES, getDailyStage, getRandomStage } from '@/lib/stages';
-import { checkValidMove, evaluateCurrentMode, getCellAt } from '@/lib/gameLogic';
-import { Cell } from '@/types/game';
+import { checkValidMove, evaluateCurrentMode, getCellAt, getValidNextMoves } from '@/lib/gameLogic';
+import { Cell, Stage } from '@/types/game';
 
 describe('Preset Stages validation', () => {
   it('should have 7 preset stages', () => {
@@ -220,6 +220,61 @@ describe('Preset Stages validation', () => {
       expect(rand10.isScrollable).toBe(true);
       const notations = new Set(rand10.cells.map((c) => c.notation));
       expect(notations.has('english')).toBe(true);
+    });
+  });
+
+  describe('Unique Path (Zero Branch) Guarantee', () => {
+    function countBranches(stage: Stage): number {
+      const startCell = getCellAt(stage.cells, stage.start.r, stage.start.c)!;
+      let solutionPath: Cell[] | null = null;
+
+      function dfs(cur: Cell[]) {
+        if (solutionPath) return;
+        const tip = cur[cur.length - 1];
+        if (tip.r === stage.goal.r && tip.c === stage.goal.c) {
+          solutionPath = [...cur];
+          return;
+        }
+        const isRev = evaluateCurrentMode(cur);
+        const moves = getValidNextMoves(tip, isRev, cur, stage.cells);
+        for (const m of moves) {
+          dfs([...cur, m]);
+        }
+      }
+      dfs([startCell]);
+
+      if (!solutionPath) return -1;
+      const path: Cell[] = solutionPath;
+
+      let branches = 0;
+      for (let i = 0; i < path.length - 1; i++) {
+        const sub = path.slice(0, i + 1);
+        const isRev = evaluateCurrentMode(sub);
+        const moves = getValidNextMoves(path[i], isRev, sub, stage.cells);
+        if (moves.length > 1) {
+          branches++;
+        }
+      }
+      return branches;
+    }
+
+    it('all preset stages (Stage 1 to 7) must have zero false branches', () => {
+      PRESET_STAGES.forEach((stage) => {
+        const b = countBranches(stage);
+        expect(b, `Stage ${stage.id} has ${b} false branches`).toBe(0);
+      });
+    });
+
+    it('Daily Stage must have zero false branches', () => {
+      const daily = getDailyStage(new Date());
+      expect(countBranches(daily)).toBe(0);
+    });
+
+    it('Random Stages (4x4, 5x5, 7x7, 10x10) must have zero false branches', () => {
+      [4, 5, 7, 10].forEach((size) => {
+        const rand = getRandomStage(size);
+        expect(countBranches(rand)).toBe(0);
+      });
     });
   });
 });

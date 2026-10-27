@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameStore } from '@/store/useGameStore';
 import { PRESET_STAGES } from '@/lib/stages';
 import { RotateCcw, Settings, ChevronLeft, ChevronRight, Clock, Footprints, Layers, Heart } from 'lucide-react';
@@ -20,10 +20,21 @@ export const Header: React.FC<HeaderProps> = ({
     timerSeconds,
     moveCount,
     lives,
+    mistakeTrigger,
     reset,
     nextStage,
     prevStage,
   } = useGameStore();
+
+  const [showDamage, setShowDamage] = useState(false);
+
+  useEffect(() => {
+    if (mistakeTrigger > 0) {
+      setShowDamage(true);
+      const timer = setTimeout(() => setShowDamage(false), 850);
+      return () => clearTimeout(timer);
+    }
+  }, [mistakeTrigger]);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -117,16 +128,20 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* ライフ */}
           <div
-            className={`flex items-center gap-2 font-black transition-colors ${
-              lives <= 1 ? 'text-rose-400 animate-pulse' : 'text-rose-300'
+            className={`relative flex items-center gap-2 font-black transition-all duration-200 ${
+              showDamage ? 'scale-110 text-rose-500' : lives <= 1 ? 'text-rose-400 animate-pulse' : 'text-rose-300'
             }`}
             title="残りライフ"
           >
+            {/* -1 フローティングアニメーション */}
+            {showDamage && (
+              <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm sm:text-base font-black text-rose-400 font-mono drop-shadow-[0_0_8px_rgba(244,63,94,0.9)] animate-float-up pointer-events-none select-none z-30">
+                -1
+              </span>
+            )}
             <Heart
-              className={`w-6 h-6 shrink-0 ${
-                lives <= 1
-                  ? 'text-rose-400 fill-rose-400'
-                  : 'text-rose-400 fill-rose-500/80'
+              className={`w-6 h-6 shrink-0 transition-transform duration-150 ${
+                showDamage ? 'scale-125 text-rose-500 fill-rose-500' : lives <= 1 ? 'text-rose-400 fill-rose-400' : 'text-rose-400 fill-rose-500/80'
               }`}
             />
             <span className="text-2xl sm:text-3xl tracking-tight tabular-nums leading-none">
